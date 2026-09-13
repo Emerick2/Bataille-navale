@@ -1,5 +1,6 @@
 import { Routes , Route } from 'react-router'
 import './App.css'
+import Layout from './components/Layouts/Layout/Layout'
 import Home from './pages/Home/Home'
 import Games from './pages/Games/Games'
 import NewGame from './pages/NewGame/NewGame'
@@ -12,14 +13,16 @@ import NotFound from './pages/NotFound/NotFound'
 function App() {
   return (
     <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/parties"  element={<Games/>} />
-        <Route path="/parties/nouvelle"  element={<NewGame/>} />
-        <Route path="/parties/:id"  element={<Game/>} />
-        <Route path="/historique"  element={<History/>} />
-        <Route path="/connexion"  element={<Login/>} />
-        <Route path="/inscription"  element={<Register/>} />
-        <Route path="*"  element={<NotFound/>} />
+        <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/parties" element={<Games/>} />
+            <Route path="/parties/nouvelle" element={<NewGame/>} />
+            <Route path="/parties/:id" element={<Game/>} />
+            <Route path="/historique" element={<History/>} />
+            <Route path="/connexion" element={<Login/>} />
+            <Route path="/inscription" element={<Register/>} />
+        </Route>
+        <Route path="*" element={<NotFound/>} />
     </Routes>
   )
 }
