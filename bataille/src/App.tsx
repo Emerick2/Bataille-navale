@@ -1,6 +1,6 @@
 import { Routes , Route } from 'react-router'
 import './App.css'
-import Layout from './components/Layouts/Layout/Layout'
+import Layout from './Layouts/Layout/Layout'
 import Home from './pages/Home/Home'
 import Games from './pages/Games/Games'
 import NewGame from './pages/NewGame/NewGame'

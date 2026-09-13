@@ -1,30 +1,18 @@
-import { NavLink, Link } from "react-router";
+import { NavLink } from "react-router";
 import NavbarStyle from './Navbar.module.css';
+
+const classeLien = ({ isActive }: { isActive: boolean }) =>
+    isActive ? `${NavbarStyle.lien} ${NavbarStyle.actif}` : NavbarStyle.lien;
 
 const Navbar = () => {
     return (
         <nav className={NavbarStyle.nav}>
-            {/* NavLink pour la page d'accueil avec gestion de la classe active */}
-            <NavLink 
-                to="/" 
-                end 
-                className={({ isActive }) =>
-                    isActive ? `${NavbarStyle.lien} ${NavbarStyle.actif}` : NavbarStyle.lien
-                }
-            >
-                Accueil
-            </NavLink>
-
-           
-            <Link to="/parties">parties</Link>
-            <Link to="/parties/nouvelle">nouvelle_parties</Link>
-            
-            
-            <Link to="/parties/:id">ecran de jeu</Link>
-            
-            <Link to="/historique">historique</Link>
-            <Link to="/connexion">connexion</Link>
-            <Link to="/inscription">inscription</Link>
+            <NavLink to="/" end className={classeLien}>Accueil</NavLink>
+            <NavLink to="/parties" className={classeLien}>Mes parties</NavLink>
+            <NavLink to="/parties/nouvelle" className={classeLien}>Nouvelle partie</NavLink>
+            <NavLink to="/historique" className={classeLien}>Historique</NavLink>
+            <NavLink to="/connexion" className={classeLien}>Connexion</NavLink>
+            <NavLink to="/inscription" className={classeLien}>Inscription</NavLink>
         </nav>
     );
 };

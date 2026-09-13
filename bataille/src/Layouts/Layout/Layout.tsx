@@ -1,4 +1,4 @@
-import Navbar from "../../Navbar/Navbar"
+import Navbar from "../../components/Navbar/Navbar"
 import { Outlet } from "react-router";
 import LayoutStyle from './Layout.module.css'
 const Layout  = () => {
