@@ -1,0 +1,50 @@
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* --- Couleurs : fond --- */
+  --abysse: #070C12;
+  --surface: #0E1621;
+  --surface-alt: #142330;
+
+  /* --- Couleurs : bordures --- */
+  --border: #1F3242;
+  --border-vif: #2C4A61;
+
+  /* --- Couleurs : texte --- */
+  --texte: #E6EEF5;
+  --muted: #8AA3B8;
+  --faint: #5A7590;
+
+  /* --- Couleurs : sens --- */
+  --sonar: #37C9C0;        /* l'accent, la marque */
+  --sonar-sombre: #1E8C86;
+  --signal: #FFB84D;       /* urgence : c'est ton tour */
+  --signal-sombre: #6B4E20;
+  --touche: #FF7A59;
+  --coule: #FF4D4D;
+
+  /* --- Typo --- */
+  --police: 'Satoshi', system-ui, sans-serif;
+  --police-titre: 'Satoshi', system-ui, sans-serif;  /* graisse 900 pour les titres */
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* --- Rythme --- */
+  --rayon: 14px;
+  --max-largeur: 1120px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--abysse);
+  color: var(--texte);
+  font-family: var(--police);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; }
+ul, ol { list-style: none; }
