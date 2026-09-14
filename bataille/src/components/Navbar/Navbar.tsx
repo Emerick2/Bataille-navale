@@ -7,8 +7,9 @@ const classeLien = ({ isActive }: { isActive: boolean }) =>
 const Navbar = () => {
     return (
         <nav className={NavbarStyle.nav}>
+            <span className={NavbarStyle.marque}>Bataille<span>·</span>Navale</span>
             <NavLink to="/" end className={classeLien}>Accueil</NavLink>
-            <NavLink to="/parties" className={classeLien}>Mes parties</NavLink>
+            <NavLink to="/parties" end className={classeLien}>Mes parties</NavLink>
             <NavLink to="/parties/nouvelle" className={classeLien}>Nouvelle partie</NavLink>
             <NavLink to="/historique" className={classeLien}>Historique</NavLink>
             <NavLink to="/connexion" className={classeLien}>Connexion</NavLink>
