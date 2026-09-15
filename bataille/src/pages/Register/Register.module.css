@@ -1,0 +1,41 @@
+.container {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    width: 400px; 
+    margin: 40px auto;
+
+} 
+
+.label {
+    color: var(--muted)
+}
+
+.input {
+    width: 100%;
+    background-color: var(--surface);
+    border: var(--border);
+    border-color: 1px solid var(--border);
+    color: var(--texte);
+    border-radius: var(--rayon);
+    padding: 10px;
+} 
+
+.boutton {
+    width: 100%; 
+    background-color: var(--sonar);
+    color: var(--texte);
+    padding: 10px;
+    border: none;
+    border-radius: var(--rayon);
+    margin-top: 20px;
+
+}
+
+.h2 {
+    color: var(--texte);
+} 
+
+.form {
+    margin-top: 10px;
+}

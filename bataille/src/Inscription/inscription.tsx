@@ -1,11 +1,11 @@
-import styles from './register.module.css'
+import styles from './inscription.module.css';
 
-export default function Register() {
+export default function Inscription() {
     return (
         <div>
             <div className={styles.container}>
                 <h2>Veuillez vous inscire</h2>
-                <form action="" className={styles.form}  method="post">
+                <form action="" className={styles.form} method="post">
                     <div>
                         <label htmlFor="">Nom</label>
                         <input type="text" className={styles.input}></input>
@@ -35,4 +35,4 @@ export default function Register() {
             </div>
         </div>
     )
-} 
+}
