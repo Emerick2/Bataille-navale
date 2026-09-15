@@ -35,7 +35,7 @@ Il crée un fichier SQLite `game.db` à côté des sources au premier lancement
 L'API complète est documentée sous forme de spec OpenAPI 3.0 dans
 [`openapi.yaml`](./openapi.yaml). Une fois le serveur lancé, on peut la
 parcourir en Swagger interactif sur **http://localhost:8000/docs** (la
-spec brute est aussi servie sur `/openapi.yaml`.
+spec brute est aussi servie sur `/openapi.yaml`).
 
 ## Authentification
 

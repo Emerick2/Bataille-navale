@@ -3,6 +3,11 @@ import React from 'react';
 
 const numberOfBoat : number = 9;
 
+/**
+ * Cette variable est un tableau à deux dimensions représentant l'état de la carte du joueur qui joue.
+ * 0 : Il n'y a rien.
+ * 1 : Il y a un bateau.
+*/
 let myGameGrid : number[][] = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,1,0,0,0,0,0,0],
@@ -16,6 +21,11 @@ let myGameGrid : number[][] = [
     [1,0,0,0,0,0,0,0,1,1]
 ]
 
+/**
+ * Cette variable est un tableau à deux dimensions représentant l'état de la carte du joueur adverse.
+ * 0 : Il n'y a rien.
+ * 1 : Il y a un bateau.
+*/
 let itsGameGrid : number[][] = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,1,0,0,0,0,0,0],
@@ -29,6 +39,12 @@ let itsGameGrid : number[][] = [
     [1,0,0,0,0,0,0,0,1,1]
 ]
 
+/**
+ * Cette variable est un tableau à deux dimensions représentant l'état de la partie du joueur.
+ * 0 : Rien ne sait passer.
+ * 1 : Le joueur a coulé.
+ * 2 : Le joueur a touché un bateau ennemie.
+ */
 let gameGridPlay : number[][] = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,1,0,2,0,0,0,0,0,0],

@@ -21,7 +21,7 @@ const TestAPI = async () => {
     // console.log(reponse);
 
 
-    /*
+    
     // se connecter au compte :
     console.log("Connexion :");
     const reponse2 = await fetch("http://localhost:8000/auth/login", {
@@ -31,26 +31,23 @@ const TestAPI = async () => {
     console.log(reponse2);
     
     // // se créé une partie :
-    console.log("Création de la partie :");
-    const reponse3 = await fetch("http://localhost:8000/games", {
-      method: "POST",
-      body: JSON.stringify({ "minPlayers": 1, "maxPlayers": 1 }),
-    });
-    console.log(reponse3);
+    // console.log("Création de la partie :");
+    // const reponse3 = await fetch("http://localhost:8000/games", {
+    //   method: "POST",
+    //   body: JSON.stringify({ "minPlayers": 1, "maxPlayers": 1 }),
+    // });
+    // console.log(reponse3);
     
     // // lancer la partie :
-    console.log("Lancement de la partie :");
-    const reponse4 = await fetch("http://localhost:8000/games", {
-      method: "POST",
-      body: JSON.stringify({ "state": "{...état initial...}", "currentTurnUserId": 0 }),
-    });
-    console.log(reponse4);
-    */
+    // console.log("Lancement de la partie :");
+    // const reponse4 = await fetch("http://localhost:8000/games", {
+    //   method: "POST",
+    //   body: JSON.stringify({ "state": "{...état initial...}", "currentTurnUserId": 1 }),
+    // });
+    // console.log(reponse4);
     
-
-
-
-
+    const reponse4 = await fetch("http://localhost:8000/games/mine");
+    console.log(reponse4)
 
 
     // const reponse5 = await fetch("http://localhost:8000/games/mine");
