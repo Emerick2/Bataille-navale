@@ -1,7 +1,22 @@
 import './GameGrid.css'
 import React from 'react';
 
+const numberOfBoat = 9;
+
 const myGameGrid = [
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,1,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,0,0],
+    [0,1,1,0,0,0,0,1,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,1,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [1,0,0,0,0,0,0,0,1,1]
+]
+
+const itsGameGrid = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,1,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,1,0,0],
@@ -59,7 +74,29 @@ function GameGridPlay() {
                         <article key={lineIndex} className="caseGameGride caseGameGrideSelected"  onClick={(e) => {
                             const x = lineIndex;
                             const y = colIndex;
-                            console.log(x+" ; "+ y);
+                            if ((gameGridPlay.length > y && gameGridPlay[y].length > x && gameGridPlay[y][x] == 0) && (itsGameGrid.length > y && itsGameGrid[y].length > x)){
+                                console.log(x+" ; "+ y);
+                                const valueOrigine = itsGameGrid[y][x];
+                                if (valueOrigine == 0){
+                                    gameGridPlay[y][x] = 1; // 1 : on coule
+                                } else {
+                                    gameGridPlay[y][x] = 2; // 2 : on touche
+
+                                    let numberOfSunkenBoat = 0;
+                                    for (let i = 0; i < gameGridPlay.length; i++) {
+                                        for (let j = 0; j < gameGridPlay[i].length; j++) {
+                                            if (gameGridPlay[i][j] == 2){
+                                                numberOfSunkenBoat++;
+                                                if (numberOfSunkenBoat >= numberOfBoat){
+                                                    // ↓ -------------------------↓ !! ↓------------------------- ↓
+                                                    console.log("Le joueur à gagner !");
+                                                    // ↑ -------------------------↑ !! ↑------------------------- ↑
+                                                }
+                                            }
+                                        }                                        
+                                    }
+                                }
+                            }
                         }}
                     />
                     ))}
