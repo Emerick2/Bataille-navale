@@ -27,26 +27,13 @@ const gameGridPlay = [
     [0,0,0,0,0,0,0,0,0,0]
 ]
 
-let oui = true
-const mettreOuiSurTrue = () => {
-    oui = true;
+interface ShootAtASquareProps {
+    x : number;
+    y : number;
 }
 
-let dernierLine : number[] = [];
-
-const mettreOuiSurFalse = (line : number[]) => {
-    oui = false;
-    
-    if (dernierLine.length == 0){
-        dernierLine = line
-    }
-    
-    const valeur : Boolean = dernierLine === line
-
-    if (valeur == false){
-        dernierLine = line
-    }
-    return valeur;
+const ShootAtASquare = ({x, y} : ShootAtASquareProps) => {
+    console.log(x+" ; "+ y);
 }
 
 function MyGameGrid() {
@@ -69,7 +56,12 @@ function GameGridPlay() {
             <React.Fragment key={colIndex}>
                 <div className="lineCase">
                     {column.map((line, lineIndex) => (
-                        <article key={lineIndex} className="caseGameGride caseGameGrideSelected"></article>
+                        <article key={lineIndex} className="caseGameGride caseGameGrideSelected"  onClick={(e) => {
+                            const x = lineIndex;
+                            const y = colIndex;
+                            console.log(x+" ; "+ y);
+                        }}
+                    />
                     ))}
                 </div>
             </React.Fragment>
