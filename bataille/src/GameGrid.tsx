@@ -3,7 +3,7 @@ import React from 'react';
 
 const numberOfBoat = 9;
 
-const myGameGrid = [
+let myGameGrid = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,1,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,1,0,0],
@@ -16,7 +16,7 @@ const myGameGrid = [
     [1,0,0,0,0,0,0,0,1,1]
 ]
 
-const itsGameGrid = [
+let itsGameGrid = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,1,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,1,0,0],
@@ -29,7 +29,7 @@ const itsGameGrid = [
     [1,0,0,0,0,0,0,0,1,1]
 ]
 
-const gameGridPlay = [
+let gameGridPlay = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -45,6 +45,71 @@ const gameGridPlay = [
 interface ShootAtASquareProps {
     x : number;
     y : number;
+}
+
+const BuildTheBoard = () => {
+    const t = [];
+    const height = 10;
+    for (let i = 0; i < height; i++) {
+        t.push([0,0,0,0,0,0,0,0,0,0]);
+    }
+    
+    let boat : number = numberOfBoat;
+    
+    while (boat > 0) {
+        const x = Math.floor(Math.random() * height);
+        const y = Math.floor(Math.random() * height);
+        let taille = Math.floor(Math.random() * 4);
+        if (taille > boat){
+            taille = boat;
+        }
+        boat--;
+        t[y][x] = 1;
+        let right : boolean = false;
+        let left : boolean = false;
+        let up : boolean = false;
+        let down : boolean = false;
+        for (let i = 0; i < taille; i++) {
+            if (i == 0){
+                if (Math.floor(Math.random() * 2) == 1){
+                    if (y+1 < height && t[y+1][x] == 0) {
+                        up=true;
+                    }
+                } else {
+                    if (x+1 < height && t[y][x+1] == 0) {
+                        right=true;
+                    }
+                }
+            }
+
+            if (right == false && left == false && up == false && down == false){
+                if (y+1 < height && t[y+1][x] == 0) {
+                    up=true;
+                } else if (y-1 < height && t[y-1][x] == 0) {
+                    down=true;
+                } else if (x+1 < height && t[y][x+1] == 0) {
+                    right=true;
+                } else if (x-1 < height && t[y][x-1] == 0) {
+                    left=true;
+                }
+            }
+
+            if (right && x+1 < height && t[y][x+1] == 0){
+                t[y][x+1] = 1;
+            } else if (left && x-1 < height && t[y][x-1] == 0){
+                t[y][x-1] = 1;
+            } else if (up && y+1 < height && t[y+1][x] == 0){
+                t[y+1][x] = 1;
+            } else if (down && y-1 < height && t[y-1][x+1] == 0){
+                t[y-1][x] = 1;
+            } else {
+                break;
+            }
+            boat--;
+        }
+    }
+
+    myGameGrid = t;
 }
 
 const ShootAtASquare = ({x, y} : ShootAtASquareProps) => {
@@ -79,8 +144,10 @@ function GameGridPlay() {
                                 const valueOrigine = itsGameGrid[y][x];
                                 if (valueOrigine == 0){
                                     gameGridPlay[y][x] = 1; // 1 : on coule
+                                    console.log("COULÉ !");
                                 } else {
                                     gameGridPlay[y][x] = 2; // 2 : on touche
+                                    console.log("TOUCHÉ !");
 
                                     let numberOfSunkenBoat = 0;
                                     for (let i = 0; i < gameGridPlay.length; i++) {
@@ -108,6 +175,7 @@ function GameGridPlay() {
 
 
 function GameGrid() {
+    BuildTheBoard();
     return (
         <section className='theGrids'>
             <MyGameGrid/>

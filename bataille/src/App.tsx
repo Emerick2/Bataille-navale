@@ -10,7 +10,58 @@ import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import NotFound from './pages/NotFound/NotFound'
 
+const TestAPI = async () => {
+  try {
+    // se créé un compte :
+    // const reponse = await fetch("http://localhost:8000/auth/signup", {
+    //   method: "POST",
+    //   body: JSON.stringify({ "email": "a@b.com", "password": "hunter2", "profilePicture": "data:image/png;base64,..." }),
+    // });
+    // console.log(reponse);
+
+    // se connecter au compte :
+    // const reponse2 = await fetch("http://localhost:8000/auth/login", {
+    //   method: "POST",
+    //   body: JSON.stringify({ "email": "a@b.com", "password": "hunter2" }),
+    // });
+    // console.log(reponse2);
+
+    // // se créé une partie :
+    // const reponse3 = await fetch("http://localhost:8000/games", {
+    //   method: "POST",
+    //   body: JSON.stringify({ "minPlayers": 0, "maxPlayers": 2 }),
+    // });
+    // console.log(reponse3);
+
+    // // lancer la partie :
+    // const reponse4 = await fetch("http://localhost:8000/games", {
+    //   method: "POST",
+    //   body: JSON.stringify({ "state": "{...état initial...}", "currentTurnUserId": 1 }),
+    // });
+    // console.log(reponse4);
+
+
+    // const reponse5 = await fetch("http://localhost:8000/games/mine");
+    // console.log(reponse5)
+
+    // const textObject = "{'bonjour':3, 'nom':'oui'}"
+    // console.log()
+
+    // séréalisation :
+    // const myEntity : number[][] | undefined = [[0,0,0], [1,0,1]]
+    // const jsonEntity: string = JSON.stringify(myEntity);
+    // const entity: number[][] = JSON.parse(jsonEntity);
+    // console.log(entity)
+
+
+  } catch(e) {
+    console.log(e)
+  }
+} 
+
 function App() {
+  TestAPI()
+
   return (
     <Routes>
         <Route element={<Layout />}>
