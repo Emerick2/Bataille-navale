@@ -13,18 +13,18 @@ import NotFound from './pages/NotFound/NotFound'
 const TestAPI = async () => {
   try {
     // se créé un compte :
-    // const reponse = await fetch("http://localhost:8000/auth/signup", {
-    //   method: "POST",
-    //   body: JSON.stringify({ "email": "a@b.com", "password": "hunter2", "profilePicture": "data:image/png;base64,..." }),
-    // });
-    // console.log(reponse);
+    const reponse = await fetch("http://localhost:8000/auth/signup", {
+      method: "POST",
+      body: JSON.stringify({ "email": "a@b.com", "password": "hunter2", "profilePicture": "data:image/png;base64,..." }),
+    });
+    console.log(reponse);
 
     // se connecter au compte :
-    // const reponse2 = await fetch("http://localhost:8000/auth/login", {
-    //   method: "POST",
-    //   body: JSON.stringify({ "email": "a@b.com", "password": "hunter2" }),
-    // });
-    // console.log(reponse2);
+    const reponse2 = await fetch("http://localhost:8000/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ "email": "a@b.com", "password": "hunter2" }),
+    });
+    console.log(reponse2);
 
     // // se créé une partie :
     // const reponse3 = await fetch("http://localhost:8000/games", {

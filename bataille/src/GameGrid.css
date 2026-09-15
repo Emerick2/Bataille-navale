@@ -46,3 +46,16 @@
 .boat{
     background-color: coral;
 }
+
+.colorSunk{
+    width: 100%;
+    height: 100%;
+    background-color: rgb(218, 188, 177);
+    border-radius: 50%;
+}
+
+.colorHit{
+    width: 100%;
+    height: 100%;
+    background-color: rgb(137, 152, 255);
+}

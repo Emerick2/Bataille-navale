@@ -1,9 +1,9 @@
 import './GameGrid.css'
 import React from 'react';
 
-const numberOfBoat = 9;
+const numberOfBoat : number = 9;
 
-let myGameGrid = [
+let myGameGrid : number[][] = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,1,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,1,0,0],
@@ -16,7 +16,7 @@ let myGameGrid = [
     [1,0,0,0,0,0,0,0,1,1]
 ]
 
-let itsGameGrid = [
+let itsGameGrid : number[][] = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,1,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,1,0,0],
@@ -29,9 +29,9 @@ let itsGameGrid = [
     [1,0,0,0,0,0,0,0,1,1]
 ]
 
-let gameGridPlay = [
+let gameGridPlay : number[][] = [
     [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
+    [0,1,0,2,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -42,7 +42,7 @@ let gameGridPlay = [
     [0,0,0,0,0,0,0,0,0,0]
 ]
 
-const height = 10;
+const height : number = 10;
 
 interface ShootAtASquareProps {
     x : number;
@@ -142,7 +142,7 @@ function GameGridPlay() {
             <React.Fragment key={colIndex}>
                 <div className="lineCase">
                     {column.map((line, lineIndex) => (
-                        <article key={lineIndex} className="caseGameGride caseGameGrideSelected"  onClick={(e) => {
+                        <article key={lineIndex} className={gameGridPlay[colIndex][lineIndex] == 0 ? "caseGameGride caseGameGrideSelected" : "caseGameGride"}  onClick={(e) => {
                             const x = lineIndex;
                             const y = colIndex;
                             if ((gameGridPlay.length > y && gameGridPlay[y].length > x && gameGridPlay[y][x] == 0) && (itsGameGrid.length > y && itsGameGrid[y].length > x)){
@@ -171,7 +171,10 @@ function GameGridPlay() {
                                 }
                             }
                         }}
-                    />
+                    >
+                        {gameGridPlay[colIndex][lineIndex] == 1 ? <div className='colorSunk'></div> : null}
+                        {gameGridPlay[colIndex][lineIndex] == 2 ? <div className='colorHit'></div> : null}
+                    </article>
                     ))}
                 </div>
             </React.Fragment>
