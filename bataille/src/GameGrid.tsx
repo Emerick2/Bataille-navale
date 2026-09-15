@@ -42,18 +42,24 @@ let gameGridPlay = [
     [0,0,0,0,0,0,0,0,0,0]
 ]
 
+const height = 10;
+
 interface ShootAtASquareProps {
     x : number;
     y : number;
 }
 
-const BuildTheBoard = () => {
+const CleanGrid = () : number[][] => {
     const t = [];
-    const height = 10;
     for (let i = 0; i < height; i++) {
         t.push([0,0,0,0,0,0,0,0,0,0]);
     }
-    
+    return t;
+}
+
+const BuildTheBoard = () : number[][] => {
+    const t = CleanGrid();
+
     let boat : number = numberOfBoat;
     
     while (boat > 0) {
@@ -109,7 +115,7 @@ const BuildTheBoard = () => {
         }
     }
 
-    myGameGrid = t;
+    return t;
 }
 
 const ShootAtASquare = ({x, y} : ShootAtASquareProps) => {
@@ -175,7 +181,12 @@ function GameGridPlay() {
 
 
 function GameGrid() {
-    BuildTheBoard();
+    // Cela sera appeller au début de la partie.
+    gameGridPlay = CleanGrid();
+    myGameGrid = BuildTheBoard();
+    itsGameGrid = BuildTheBoard();
+    // sauvegarder les grilles.
+
     return (
         <section className='theGrids'>
             <MyGameGrid/>
