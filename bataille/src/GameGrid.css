@@ -1,0 +1,48 @@
+.theGrids{
+    /* display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 40px;
+    flex-direction:row; */
+}
+
+.espaceVide{
+    border: solid 0px;
+    width: 100px;
+}
+
+.lineCase{
+    display: flex;
+    flex-direction: row;
+}
+
+.caseGameGride{
+    transition: 0.2s;
+    border: solid 1px;
+    width: 30px;
+    height: 30px;
+}
+
+.caseGameGrideSelected{
+    cursor: pointer;
+}
+
+.caseGameGrideSelected:hover{
+    transition: 0.2s;
+    background-color: gainsboro;
+}
+
+.caseGameGrideSelected:active{
+    transition: 0.2s;
+    background-color: rgb(190, 189, 189);
+}
+
+.notToBeSelected, .notToBeSelected:hover, .notToBeSelected:active{
+    transition: 0.2s;
+    background-color: white;
+    cursor:auto;
+}
+
+.boat{
+    background-color: coral;
+}
