@@ -9,7 +9,7 @@ import History from './pages/History/History'
 import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import NotFound from './pages/NotFound/NotFound'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext } from 'react';
 
 interface GameData{
   id: number;
@@ -31,7 +31,7 @@ interface PlayerHeaders{
   Authorization : string;
 }
 
-interface Player{
+export interface Player{
   player : GameData;
   playerHeaders : PlayerHeaders;
 }
@@ -137,9 +137,16 @@ const TestAPI = async () => {
   return null
 }
 
-function App() {
+export const PlayerContext = createContext<{
+  player: Player | null;
+  setPlayer: (player: Player | null) => void;
+}>({
+  player: null,
+  setPlayer: () => {},
+});
+
+const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
   const [player, setPlayer] = useState<Player | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     let isActive = true;
@@ -152,36 +159,41 @@ function App() {
       .catch((error) => {
         console.error('Échec du chargement des données du joueur :', error);
       })
-      .finally(() => {
-        if (isActive) {
-          setLoading(false);
-        }
-      });
 
     return () => {
       isActive = false;
     };
   }, []);
+  return (
+    <PlayerContext value={{ player, setPlayer }}>
+      {children}
+    </PlayerContext>
+  );
+};
 
-  if (loading) {
-    return <div>Chargement de l'API en cours...</div>;
-  }
 
+function App() {
+
+  /*Ici, puisque ce n'est pas la version définitive, je n’ai pas fait de wrapper.
+  Il faudra en faire un quand il y aura la méthode de connexion.*/
 
   return (
-    <Routes>
-        <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/parties" element={<Games/>} />
-            <Route path="/parties/nouvelle" element={<NewGame/>} />
-            <Route path="/parties/:id" element={<Game/>} />
-            <Route path="/historique" element={<History/>} />
-            <Route path="/connexion" element={<Login/>} />
-            <Route path="/inscription" element={<Register/>} />
-        </Route>
+    <PlayerProvider>
+      <Routes>
+          <Route element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/parties" element={<Games/>} />
+              <Route path="/parties/nouvelle" element={<NewGame/>} />
+              <Route path="/parties/:id" element={<Game/>} />
+              <Route path="/historique" element={<History/>} />
+              <Route path="/connexion" element={<Login/>} />
+              <Route path="/inscription" element={<Register/>} />
+          </Route>
         <Route path="*" element={<NotFound/>} />
-    </Routes>
+      </Routes>
+    </PlayerProvider>
   )
 }
 
 export default App
+export { PlayerContext as CounterContext, PlayerProvider };

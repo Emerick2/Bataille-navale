@@ -1,5 +1,6 @@
+import {PlayerContext} from './App';
 import './GameGrid.css'
-import React from 'react';
+import React, {useContext} from 'react';
 
 const numberOfBoat : number = 9;
 
@@ -153,6 +154,11 @@ function MyGameGrid() {
 }
 
 function GameGridPlay() {
+    const player = useContext(PlayerContext);
+    console.log("En jeu :")
+    console.log(player)
+    // const setPlayer = useContext(ContextSetPlayer);
+
     return (
         gameGridPlay.map((column, colIndex) => (
             <React.Fragment key={colIndex}>
