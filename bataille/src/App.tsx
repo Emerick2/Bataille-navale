@@ -51,6 +51,7 @@ export const request = async (path: string, options: RequestInit = {})   => {
 
 
 
+// const TestAPI = async (player : Player | null, setPlayer: (player: Player | null) => void) => {
 const TestAPI = async () => {
   const apiUrl = 'http://localhost:8000'
   const password = 'hunter2'
