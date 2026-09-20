@@ -1,4 +1,4 @@
-import {PlayerContext} from './App';
+import {PlayerContext, request, type PlayerHeaders} from './App';
 import './GameGrid.css'
 import React, {useContext} from 'react';
 
@@ -59,6 +59,13 @@ let gameGridPlay : number[][] = [
     [0,0,0,0,0,0,0,0,0,0]
 ]
 
+export interface TheGameGrids{
+    GameGridPlayer1 : number[][]; // La grille avec les bateau J1
+    GameGridPlayer2 : number[][]; // La grille avec les bateau J2
+    PlayGameGridPlayer1 : number[][]; // La grille avec les tentatives J1
+    PlayGameGridPlayer2 : number[][]; // La grille avec les tentatives J2
+}
+
 const height : number = 10;
 
 interface ShootAtASquareProps {
@@ -66,7 +73,7 @@ interface ShootAtASquareProps {
     y : number;
 }
 
-const CleanGrid = () : number[][] => {
+export const CleanGrid = () : number[][] => {
     const t = [];
     for (let i = 0; i < height; i++) {
         t.push([0,0,0,0,0,0,0,0,0,0]);
@@ -74,7 +81,7 @@ const CleanGrid = () : number[][] => {
     return t;
 }
 
-const BuildTheBoard = () : number[][] => {
+export const BuildTheBoard = () : number[][] => {
     const t = CleanGrid();
 
     let boat : number = numberOfBoat;
@@ -135,8 +142,39 @@ const BuildTheBoard = () : number[][] => {
     return t;
 }
 
-const ShootAtASquare = ({x, y} : ShootAtASquareProps) => {
-    console.log(x+" ; "+ y);
+
+export const ReadPartOfTheGame = async (gameId : number, userID : number, playerHeaders : PlayerHeaders, serializedBoard : string) => {
+    try {
+        const response = await request(`/games/${gameId}/state`, {
+            method: 'GET',
+            headers: playerHeaders,
+            body: JSON.stringify({
+                state: serializedBoard,
+                currentTurnUserId: userID,
+            }),
+        })
+
+        return response;
+    } catch (erreur) {
+        return erreur;
+    }
+}
+
+export const WritePartOfTheGame = async (gameId : number, userID : number, playerHeaders : PlayerHeaders, serializedBoard : string) => {
+    try {
+        const response = await request(`/games/${gameId}/state`, {
+            method: 'PUT',
+            headers: playerHeaders,
+            body: JSON.stringify({
+                state: serializedBoard,
+                currentTurnUserId: userID,
+            }),
+        })
+
+        return response;
+    } catch (erreur) {
+        return erreur;
+    }
 }
 
 function MyGameGrid() {
@@ -154,10 +192,11 @@ function MyGameGrid() {
 }
 
 function GameGridPlay() {
-    const player = useContext(PlayerContext);
+    const { player } = useContext(PlayerContext);
     console.log("En jeu :")
-    console.log(player)
-    // const setPlayer = useContext(ContextSetPlayer);
+    if (player != null){
+        console.log(player.player.state);
+    }
 
     return (
         gameGridPlay.map((column, colIndex) => (
@@ -215,7 +254,6 @@ function GameGrid() {
     return (
         <section className='theGrids'>
             <MyGameGrid/>
-            {/* <span className='espaceVide'/> */}
             <br/><br/><br/>
             <GameGridPlay/>
         </section>

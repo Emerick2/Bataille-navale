@@ -10,8 +10,9 @@ import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import NotFound from './pages/NotFound/NotFound'
 import { useState, useEffect, createContext } from 'react';
+import {BuildTheBoard, CleanGrid, ReadPartOfTheGame, type TheGameGrids} from './GameGrid'
 
-interface GameData{
+export interface GameData{
   id: number;
   creatorId: number;
   minPlayers: number;
@@ -27,7 +28,7 @@ interface GameData{
   endedAt: Object;
 }
 
-interface PlayerHeaders{
+export interface PlayerHeaders{
   Authorization : string;
 }
 
@@ -36,6 +37,17 @@ export interface Player{
   playerHeaders : PlayerHeaders;
 }
 
+export const request = async (path: string, options: RequestInit = {})   => {
+  const apiUrl = 'http://localhost:8000';
+  const response = await fetch(`${apiUrl}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  })
+  return response;
+}
 
 
 
@@ -84,8 +96,17 @@ const TestAPI = async () => {
       body: JSON.stringify({ email: playerTwoEmail }),
     })
 
-    const board = [[0, 0], [1, 1]]
+    // Création de la carte du jeu :
+    const board : TheGameGrids = {
+      GameGridPlayer1 : BuildTheBoard(),
+      GameGridPlayer2 : BuildTheBoard(),
+      PlayGameGridPlayer1 : CleanGrid(),
+      PlayGameGridPlayer2 : CleanGrid(),
+    };
     const serializedBoard = JSON.stringify(board)
+
+    playerOne.state = serializedBoard
+
     await request(`/games/${game.id}/start`, {
       method: 'POST',
       headers: playerOneHeaders,
@@ -98,7 +119,7 @@ const TestAPI = async () => {
     const boardReadByPlayerOne = await request(`/games/${game.id}`, {
       headers: playerOneHeaders,
     })
-    console.log('Tableau lu par le joueur 1 :', JSON.parse(boardReadByPlayerOne.state))
+    // console.log('Tableau lu par le joueur 1 :', JSON.parse(boardReadByPlayerOne.state))
 
     await request(`/games/${game.id}/state`, {
       method: 'PUT',
@@ -112,7 +133,7 @@ const TestAPI = async () => {
     const boardReadByPlayerTwo = await request(`/games/${game.id}`, {
       headers: playerTwoHeaders,
     })
-    console.log('Tableau lu par le joueur 2 :', JSON.parse(boardReadByPlayerTwo.state))
+    // console.log('Tableau lu par le joueur 2 :', JSON.parse(boardReadByPlayerTwo.state))
 
     await request(`/games/${game.id}/state`, {
       method: 'PUT',
@@ -126,9 +147,14 @@ const TestAPI = async () => {
     const finalGame = await request(`/games/${game.id}`, {
       headers: playerOneHeaders,
     })
-    console.log('Tableau final lu par le joueur 1 :', JSON.parse(finalGame.state));
+    // console.log('Tableau final lu par le joueur 1 :', JSON.parse(finalGame.state));
 
     const player : Player = {player:playerOne, playerHeaders : playerOneHeaders};
+
+
+
+    // console.log("Ma fonction de lecture :")
+    // console.log(await ReadPartOfTheGame(game.id))
     return player
   } catch (error) {
     console.error('Test de l API impossible :', error)
@@ -165,9 +191,9 @@ const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
   return (
-    <PlayerContext value={{ player, setPlayer }}>
+    <PlayerContext.Provider value={{ player, setPlayer }}>
       {children}
-    </PlayerContext>
+    </PlayerContext.Provider>
   );
 };
 
