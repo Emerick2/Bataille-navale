@@ -1,8 +1,7 @@
 import './GameGrid.css'
 import React, {useContext, useEffect, useState} from 'react';
 import {EndedGame, ItIsPlayerOneTurn, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
-import {PlayerContext, type Player} from './context/PlayerContext';
-import {GameInProgressPlayer, HistoryPlayer} from './GridFunctionality/DataPlayerAPI';
+import {PlayerContext} from './context/PlayerContext';
 
 export const numberOfBoat : number = 9;
 
@@ -178,8 +177,6 @@ function GameGrid() {
                 }
                 setItIsOurTurn(valeur)
             });
-        // HistoryPlayer(player.playerHeaders);
-        // GameInProgressPlayer(player.playerHeaders)
     }
 
     return (

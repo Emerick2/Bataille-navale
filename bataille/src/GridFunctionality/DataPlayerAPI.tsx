@@ -13,7 +13,6 @@ export const HistoryPlayer = async (playerHeaders : PlayerHeaders): Promise<Game
         throw new Error(`Impossible de récupérer les données de l'historique : ${response.status}`);
     }
 
-    console.log(response.json() as Promise<GameData[]>)
     return response.json() as Promise<GameData[]>;
 }
 
@@ -29,6 +28,5 @@ export const GameInProgressPlayer = async (playerHeaders : PlayerHeaders): Promi
         throw new Error(`Impossible de récupérer les données de l'historique des parties en cours : ${response.status}`);
     }
 
-    console.log(response.json() as Promise<GameData[]>)
     return response.json() as Promise<GameData[]>;
 }

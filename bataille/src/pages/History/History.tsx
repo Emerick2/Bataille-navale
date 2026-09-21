@@ -1,4 +1,7 @@
+import {useContext, useEffect, useState} from 'react';
+import {GameInProgressPlayer, HistoryPlayer} from '../../GridFunctionality/DataPlayerAPI';
 import './History.css'
+import {PlayerContext, type GameData, type Player} from '../../context/PlayerContext';
 
 /*
 Consigne :
@@ -15,70 +18,112 @@ sur une page d'historique spécifique à chaque joueur.
 - nombre de partie gagner / nombre partie jouer
 */
 interface HistoryBloc{
-    NameOne : string;
-    NameTwo : string;
-    Status : string;
-    CreatedAt : string;
+    nameOne : string;
+    nameTwo : string;
+    status : string;
+    createdAt : string;
+}
+
+interface ListOfHistoryBloc{
+    listOfOngoingGames : HistoryBloc[];
+    listOfPendingGames : HistoryBloc[];
+    listOfCompletedGames : HistoryBloc[];
+    gamesWin : number;
+    totalGames : number;
+    winPercentage : number;
 }
 
 
+const LoadHistory = async (player : Player, setLoading : (loading : boolean) => void, setListOfHistoryBloc : (listOfHistoryBloc : ListOfHistoryBloc) => void) => {
+    const listOfHistoryBloc : ListOfHistoryBloc = { listOfOngoingGames : [], listOfPendingGames : [], listOfCompletedGames : [], gamesWin : 0, totalGames : 0, winPercentage : 0, };
+    const history : GameData[] = await HistoryPlayer(player.playerHeaders);
+    const gameInProgress : GameData[] = await GameInProgressPlayer(player.playerHeaders);
+    
+    for (let i = 0; i < gameInProgress.length; i++) {
+        // console.log(gameInProgress[0].createdAt);
+        const newObject : HistoryBloc = {
+            nameOne : gameInProgress[0].creatorId.toString(),
+            // nameTwo : gameInProgress[0].players.id.toString(),
+            nameTwo : "Nom2",
+            status : gameInProgress[0].status, // revenir ici pour mettre la bonne valeur.
+            createdAt : gameInProgress[0].createdAt,
+        };
+        if (gameInProgress[0].status == "pending"){
+            listOfHistoryBloc.listOfPendingGames.push(newObject);
+        } else if (gameInProgress[0].status == "started"){
+            listOfHistoryBloc.listOfOngoingGames.push(newObject);
+        } else {
+            listOfHistoryBloc.listOfCompletedGames.push(newObject);
+        }
+        
+        listOfHistoryBloc.totalGames++;
+        // newObject.status = ""
+    }
+
+    setListOfHistoryBloc(listOfHistoryBloc);
+    setLoading(false);
+}
+
 const History = () => {
-    const listOfOngoingGames : HistoryBloc[] = []
-    const listOfPendingGames : HistoryBloc[] = []
-    const listOfCompletedGames : HistoryBloc[] = []
-    let gamesWin : number = 0
-    let totalGames : number = 0
-    let winPercentage : number = 0
+    const { player } = useContext(PlayerContext);
+    const [loading, setLoading] = useState(true);
+    const [listOfHistoryBloc, setListOfHistoryBloc] = useState<ListOfHistoryBloc>({ listOfOngoingGames : [], listOfPendingGames : [], listOfCompletedGames : [], gamesWin : 0, totalGames : 0, winPercentage : 0, })
+    if (player == null) return <h1>Vous n’êtes pas connecté.</h1>
+
+    if (loading){
+        LoadHistory(player, setLoading, setListOfHistoryBloc);
+    }
 
     return (
         <>
             <h1>Historique des parties</h1>
-            <p>{winPercentage}% de parties gagner</p>
-            <p>{gamesWin}/{totalGames} de parties gagner</p>
+            {loading ? <h2>Chargement en cours...</h2> : null}
+            <p>{listOfHistoryBloc.winPercentage}% de parties gagner</p>
+            <p>{listOfHistoryBloc.gamesWin}/{listOfHistoryBloc.totalGames} de parties gagner</p>
             
-            {listOfPendingGames.length > 0 ?
+            {listOfHistoryBloc.listOfPendingGames.length > 0 ?
                 <>
                     <h2>Les parties en cours</h2>
-                    {listOfPendingGames.map((e) => (
-                        <article className="aHistory">
+                    {listOfHistoryBloc.listOfPendingGames.map((e) => (
+                        <article className="aHistory" key={crypto.randomUUID()}>
                             <div className='listeOfName'>
-                                <p className='nameOne'>{e.NameOne}</p>
-                                <p className='nameTwo'>{e.NameTwo}</p>
+                                <p className='nameOne'>{e.nameOne}</p>
+                                <p className='nameTwo'>{e.nameTwo}</p>
                             </div>
-                            <p className='status'>État : {e.Status}</p>
-                            <p className='createdAt'>Début : {e.CreatedAt}</p>
+                            <p className='status'>État : {e.status}</p>
+                            <p className='createdAt'>Début : {e.createdAt}</p>
                         </article>
                     ))}
                 </>
             : null}
 
-            {listOfOngoingGames.length > 0 ?
+            {listOfHistoryBloc.listOfOngoingGames.length > 0 ?
                 <>
                     <h2>Les parties en attente de l'autre joueur</h2>
-                    {listOfOngoingGames.map((e) => (
-                        <article className="aHistory">
+                    {listOfHistoryBloc.listOfOngoingGames.map((e) => (
+                        <article className="aHistory" key={crypto.randomUUID()}>
                             <div className='listeOfName'>
-                                <p className='nameOne'>{e.NameOne}</p>
-                                <p className='nameTwo'>{e.NameTwo}</p>
+                                <p className='nameOne'>{e.nameOne}</p>
+                                <p className='nameTwo'>{e.nameTwo}</p>
                             </div>
-                            <p className='status'>État : {e.Status}</p>
-                            <p className='createdAt'>Début : {e.CreatedAt}</p>
+                            <p className='status'>État : {e.status}</p>
+                            <p className='createdAt'>Début : {e.createdAt}</p>
                         </article>
                     ))}
                 </>
             : null }
             
-            {listOfCompletedGames.length > 0 ?
+            {listOfHistoryBloc.listOfCompletedGames.length > 0 ?
                 <>
                     <h2>Les parties terminés</h2>
-                    {listOfCompletedGames.map((e) => (
-                        <article className="aHistory">
+                    {listOfHistoryBloc.listOfCompletedGames.map((e) => (
+                        <article className="aHistory" key={crypto.randomUUID()}>
                             <div className='listeOfName'>
-                                <p className='nameOne'>{e.NameOne}</p>
-                                <p className='nameTwo'>{e.NameTwo}</p>
+                                <p className='nameOne'>{e.nameOne}</p>
+                                <p className='nameTwo'>{e.nameTwo}</p>
                             </div>
-                            <p className='status'>État : {e.Status}</p>
-                            <p className='createdAt'>Début : {e.CreatedAt}</p>
+                            <p className='status'>État : {e.status}</p>
+                            <p className='createdAt'>Début : {e.createdAt}</p>
                         </article>
                     ))}
                 </>
