@@ -1,27 +1,9 @@
-import {PlayerContext, request, type PlayerHeaders} from './App';
 import './GameGrid.css'
 import React, {useContext} from 'react';
+import {WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
+import {PlayerContext} from './context/PlayerContext';
 
-const numberOfBoat : number = 9;
-
-/**
- * Cette variable est un tableau à deux dimensions représentant l'état de la partie du joueur.
- * 0 : Rien ne sait passer.
- * 1 : Le joueur a coulé.
- * 2 : Le joueur a touché un bateau ennemie.
- */
-let gameGridPlay : number[][] = [
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,1,0,2,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0]
-]
+export const numberOfBoat : number = 9;
 
 export interface TheGameGrids{
     GameGridPlayer1 : number[][]; // La grille avec les bateau J1
@@ -30,111 +12,7 @@ export interface TheGameGrids{
     PlayGameGridPlayer2 : number[][]; // La grille avec les tentatives J2
 }
 
-const height : number = 10;
-
-export const CleanGrid = () : number[][] => {
-    const t = [];
-    for (let i = 0; i < height; i++) {
-        t.push([0,0,0,0,0,0,0,0,0,0]);
-    }
-    return t;
-}
-
-export const BuildTheBoard = () : number[][] => {
-    const t = CleanGrid();
-
-    let boat : number = numberOfBoat;
-    
-    while (boat > 0) {
-        const x = Math.floor(Math.random() * height);
-        const y = Math.floor(Math.random() * height);
-        let taille = Math.floor(Math.random() * 4);
-        if (taille > boat){
-            taille = boat;
-        }
-        boat--;
-        t[y][x] = 1;
-        let right : boolean = false;
-        let left : boolean = false;
-        let up : boolean = false;
-        let down : boolean = false;
-        for (let i = 0; i < taille; i++) {
-            if (i == 0){
-                if (Math.floor(Math.random() * 2) == 1){
-                    if (y+1 < height && t[y+1][x] == 0) {
-                        up=true;
-                    }
-                } else {
-                    if (x+1 < height && t[y][x+1] == 0) {
-                        right=true;
-                    }
-                }
-            }
-
-            if (right == false && left == false && up == false && down == false){
-                if (y+1 < height && t[y+1][x] == 0) {
-                    up=true;
-                } else if (y-1 < height && t[y-1][x] == 0) {
-                    down=true;
-                } else if (x+1 < height && t[y][x+1] == 0) {
-                    right=true;
-                } else if (x-1 < height && t[y][x-1] == 0) {
-                    left=true;
-                }
-            }
-
-            if (right && x+1 < height && t[y][x+1] == 0){
-                t[y][x+1] = 1;
-            } else if (left && x-1 < height && t[y][x-1] == 0){
-                t[y][x-1] = 1;
-            } else if (up && y+1 < height && t[y+1][x] == 0){
-                t[y+1][x] = 1;
-            } else if (down && y-1 < height && t[y-1][x+1] == 0){
-                t[y-1][x] = 1;
-            } else {
-                break;
-            }
-            boat--;
-        }
-    }
-
-    return t;
-}
-
-
-export const ReadPartOfTheGame = async (gameId : number, userID : number, playerHeaders : PlayerHeaders, serializedBoard : string) => {
-    try {
-        const response = await request(`/games/${gameId}/state`, {
-            method: 'GET',
-            headers: playerHeaders,
-            body: JSON.stringify({
-                state: serializedBoard,
-                currentTurnUserId: userID,
-            }),
-        })
-
-        return response;
-    } catch (erreur) {
-        return erreur;
-    }
-}
-
-export const WritePartOfTheGame = async (gameId : number, userID : number, playerHeaders : PlayerHeaders, serializedBoard : string) => {
-    try {
-        const response = await request(`/games/${gameId}/state`, {
-            method: 'PUT',
-            headers: playerHeaders,
-            body: JSON.stringify({
-                state: serializedBoard,
-                currentTurnUserId: userID,
-            }),
-        })
-
-        return response;
-    } catch (erreur) {
-        return erreur;
-    }
-}
+export const height : number = 10;
 
 function MyGameGrid() {
     const { player } = useContext(PlayerContext);
@@ -164,7 +42,7 @@ function GameGridPlay() {
     }
     if (player != null){
         const theGameGrids : TheGameGrids = JSON.parse(player.player.state);
-        gameGridPlay = theGameGrids.PlayGameGridPlayer1; // Si on est le joueur 1.
+        const gameGridPlay : number[][] = theGameGrids.PlayGameGridPlayer1; // Si on est le joueur 1.
 
         return (
             gameGridPlay.map((column, colIndex) => (
@@ -174,7 +52,7 @@ function GameGridPlay() {
                             <article key={lineIndex} className={gameGridPlay[colIndex][lineIndex] == 0 ? "caseGameGride caseGameGrideSelected" : "caseGameGride"}  onClick={(e) => {
                                 const x = lineIndex;
                                 const y = colIndex;
-                                if ((gameGridPlay.length > y && gameGridPlay[y].length > x && gameGridPlay[y][x] == 0) && (itsGameGrid.length > y && itsGameGrid[y].length > x)){
+                                if ((gameGridPlay.length > y && gameGridPlay[y].length > x && gameGridPlay[y][x] == 0) && (theGameGrids.GameGridPlayer2.length > y && theGameGrids.GameGridPlayer2[y].length > x)){
                                     console.log(x+" ; "+ y);
                                     const valueOrigine = theGameGrids.GameGridPlayer2[y][x];
                                     if (valueOrigine == 0){
@@ -197,6 +75,26 @@ function GameGridPlay() {
                                                 }
                                             }                                        
                                         }
+                                    }
+
+                                    // Revenir ici pour la variante j1 / j2
+                                    theGameGrids.PlayGameGridPlayer1 = gameGridPlay.map(row => [...row]);
+                                    const serializedBoard : string = JSON.stringify(theGameGrids);
+
+                                    if (player != null) {
+                                        setPlayer({
+                                            ...player,
+                                            player: {
+                                            ...player.player,
+                                            state: serializedBoard,
+                                            },
+                                        });
+                                        WritePartOfTheGame(
+                                            player.player.id,
+                                            player.player.creatorId,
+                                            player.playerHeaders,
+                                            serializedBoard
+                                        ).catch((err) => console.error("Erreur lors de la sauvegarde sur l'API :", err));
                                     }
                                 }
                             }}

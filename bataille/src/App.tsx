@@ -9,50 +9,12 @@ import History from './pages/History/History'
 import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import NotFound from './pages/NotFound/NotFound'
-import { useState, useEffect, createContext } from 'react';
-import {BuildTheBoard, CleanGrid, ReadPartOfTheGame, type TheGameGrids} from './GameGrid'
-
-export interface GameData{
-  id: number;
-  creatorId: number;
-  minPlayers: number;
-  maxPlayers: number;
-  status: "pending" | "started" | "ended";
-  players: Object;
-  currentTurnUserId: number;
-  isYourTurn: boolean;
-  state: string;
-  endData: Object;
-  createdAt: string;
-  startedAt: Object;
-  endedAt: Object;
-}
-
-export interface PlayerHeaders{
-  Authorization : string;
-}
-
-export interface Player{
-  player : GameData;
-  playerHeaders : PlayerHeaders;
-}
-
-export const request = async (path: string, options: RequestInit = {})   => {
-  const apiUrl = 'http://localhost:8000';
-  const response = await fetch(`${apiUrl}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  })
-  return response;
-}
-
-
+import {type TheGameGrids} from './GameGrid'
+import {PlayerProvider, type Player} from './context/PlayerContext'
+import {BuildTheBoard, CleanGrid} from './GridFunctionality/CreationOfTheGrid'
 
 // const TestAPI = async (player : Player | null, setPlayer: (player: Player | null) => void) => {
-const TestAPI = async () => {
+export const TestAPI = async () => {
   const apiUrl = 'http://localhost:8000'
   const password = 'hunter2'
   const playerOneEmail = `test-joueur-1-${Date.now()}@example.com`
@@ -164,46 +126,7 @@ const TestAPI = async () => {
   return null
 }
 
-export const PlayerContext = createContext<{
-  player: Player | null;
-  setPlayer: (player: Player | null) => void;
-}>({
-  player: null,
-  setPlayer: () => {},
-});
-
-const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
-  const [player, setPlayer] = useState<Player | null>(null);
-
-  useEffect(() => {
-    let isActive = true;
-    TestAPI()
-      .then((result) => {
-        if (isActive) {
-          setPlayer(result);
-        }
-      })
-      .catch((error) => {
-        console.error('Échec du chargement des données du joueur :', error);
-      })
-
-    return () => {
-      isActive = false;
-    };
-  }, []);
-  return (
-    <PlayerContext.Provider value={{ player, setPlayer }}>
-      {children}
-    </PlayerContext.Provider>
-  );
-};
-
-
 function App() {
-
-  /*Ici, puisque ce n'est pas la version définitive, je n’ai pas fait de wrapper.
-  Il faudra en faire un quand il y aura la méthode de connexion.*/
-
   return (
     <PlayerProvider>
       <Routes>
@@ -223,4 +146,3 @@ function App() {
 }
 
 export default App
-export { PlayerContext as CounterContext, PlayerProvider };
