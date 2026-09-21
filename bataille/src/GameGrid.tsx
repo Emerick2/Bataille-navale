@@ -24,11 +24,11 @@ function MyGameGrid() {
         }
 
         return (
-            gridBoat.map((column, colIndex) => (
-                <React.Fragment key={colIndex}>
+            gridBoat.map((column) => (
+                <React.Fragment key={crypto.randomUUID()}>
                     <div className="lineCase">
                         {column.map((line, lineIndex) => (
-                            line == 0 ? <article key={lineIndex} className="caseGameGride"></article> : <article key={lineIndex} className="caseGameGride boat"></article>
+                            line == 0 ? <article key={crypto.randomUUID()} className="caseGameGride"></article> : <article key={lineIndex} className="caseGameGride boat"></article>
                         ))}
                     </div>
                 </React.Fragment>
@@ -59,15 +59,15 @@ function GameGridPlay() {
 
         return (
             gameGridPlay.map((column, colIndex) => (
-                <React.Fragment key={colIndex}>
+                <React.Fragment key={crypto.randomUUID()}>
                     <div className="lineCase">
                         {column.map((line, lineIndex) => (
-                            <article key={lineIndex} className={gameGridPlay[colIndex][lineIndex] == 0 ? "caseGameGride caseGameGrideSelected" : "caseGameGride"}  onClick={(e) => {
+                            <article key={crypto.randomUUID()} className={gameGridPlay[colIndex][lineIndex] == 0 ? "caseGameGride caseGameGrideSelected" : "caseGameGride"}  onClick={(e) => {
                                 if (!itIsOurTurn){
                                     return;
                                 }
-                                const x = lineIndex;
-                                const y = colIndex;
+                                const x : number = lineIndex;
+                                const y : number = colIndex;
                                 if ((gameGridPlay.length > y && gameGridPlay[y].length > x && gameGridPlay[y][x] == 0) && (theGameGrids.GameGridPlayer2.length > y && theGameGrids.GameGridPlayer2[y].length > x)){
                                     console.log(x+" ; "+ y);
                                     const valueOrigine = theGameGrids.GameGridPlayer2[y][x];
@@ -142,8 +142,16 @@ function GameGridPlay() {
 
 
 function GameGrid() {
+    const { player } = useContext(PlayerContext);
+    let itIsOurTurn : boolean = false;
+    if (player != null){
+        ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders)
+            .then((isPlayerOneTurn) => itIsOurTurn = isPlayerOneTurn);
+    }
+
     return (
         <section className='theGrids'>
+            {/* {itIsOurTurn ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>} */}
             <MyGameGrid/>
             <br/><br/><br/>
             <GameGridPlay/>

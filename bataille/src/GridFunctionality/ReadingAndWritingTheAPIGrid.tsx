@@ -87,10 +87,6 @@ export const TheCurrentPlayerIsPlayerOne = (player: Player): boolean => {
     return player.player.creatorId === player.userId;
 };
 
-// export const ItIsPlayerOneTurn = (player: Player): boolean => {
-//     return player.player.currentTurnUserId === player.player.creatorId;
-// }
-
 export const ItIsPlayerOneTurn = async (player: Player, gameId: number, playerHeaders: PlayerHeaders): Promise<boolean> => {
     try{
         const response = await ReadPartOfTheGame(gameId, playerHeaders);
