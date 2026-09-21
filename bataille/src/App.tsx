@@ -9,37 +9,12 @@ import History from './pages/History/History'
 import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import NotFound from './pages/NotFound/NotFound'
-import { useState, useEffect, createContext } from 'react';
+import {type TheGameGrids} from './GameGrid'
+import {PlayerProvider, type Player} from './context/PlayerContext'
+import {BuildTheBoard, CleanGrid} from './GridFunctionality/CreationOfTheGrid'
 
-interface GameData{
-  id: number;
-  creatorId: number;
-  minPlayers: number;
-  maxPlayers: number;
-  status: "pending" | "started" | "ended";
-  players: Object;
-  currentTurnUserId: number;
-  isYourTurn: boolean;
-  state: string;
-  endData: Object;
-  createdAt: string;
-  startedAt: Object;
-  endedAt: Object;
-}
-
-interface PlayerHeaders{
-  Authorization : string;
-}
-
-export interface Player{
-  player : GameData;
-  playerHeaders : PlayerHeaders;
-}
-
-
-
-
-const TestAPI = async () => {
+// const TestAPI = async (player : Player | null, setPlayer: (player: Player | null) => void) => {
+export const TestAPI = async () => {
   const apiUrl = 'http://localhost:8000'
   const password = 'hunter2'
   const playerOneEmail = `test-joueur-1-${Date.now()}@example.com`
@@ -84,8 +59,17 @@ const TestAPI = async () => {
       body: JSON.stringify({ email: playerTwoEmail }),
     })
 
-    const board = [[0, 0], [1, 1]]
+    // Création de la carte du jeu :
+    const board : TheGameGrids = {
+      GameGridPlayer1 : BuildTheBoard(),
+      GameGridPlayer2 : BuildTheBoard(),
+      PlayGameGridPlayer1 : CleanGrid(),
+      PlayGameGridPlayer2 : CleanGrid(),
+    };
     const serializedBoard = JSON.stringify(board)
+
+    playerOne.state = serializedBoard
+
     await request(`/games/${game.id}/start`, {
       method: 'POST',
       headers: playerOneHeaders,
@@ -98,7 +82,7 @@ const TestAPI = async () => {
     const boardReadByPlayerOne = await request(`/games/${game.id}`, {
       headers: playerOneHeaders,
     })
-    console.log('Tableau lu par le joueur 1 :', JSON.parse(boardReadByPlayerOne.state))
+    // console.log('Tableau lu par le joueur 1 :', JSON.parse(boardReadByPlayerOne.state))
 
     await request(`/games/${game.id}/state`, {
       method: 'PUT',
@@ -112,7 +96,7 @@ const TestAPI = async () => {
     const boardReadByPlayerTwo = await request(`/games/${game.id}`, {
       headers: playerTwoHeaders,
     })
-    console.log('Tableau lu par le joueur 2 :', JSON.parse(boardReadByPlayerTwo.state))
+    // console.log('Tableau lu par le joueur 2 :', JSON.parse(boardReadByPlayerTwo.state))
 
     await request(`/games/${game.id}/state`, {
       method: 'PUT',
@@ -126,9 +110,18 @@ const TestAPI = async () => {
     const finalGame = await request(`/games/${game.id}`, {
       headers: playerOneHeaders,
     })
-    console.log('Tableau final lu par le joueur 1 :', JSON.parse(finalGame.state));
+    // console.log('Tableau final lu par le joueur 1 :', JSON.parse(finalGame.state));
 
-    const player : Player = {player:playerOne, playerHeaders : playerOneHeaders};
+    const player : Player = {
+      player: finalGame,
+      playerHeaders: playerOneHeaders,
+      userId: playerOne.user.id,
+    };
+
+
+
+    // console.log("Ma fonction de lecture :")
+    // console.log(await ReadPartOfTheGame(game.id))
     return player
   } catch (error) {
     console.error('Test de l API impossible :', error)
@@ -137,46 +130,7 @@ const TestAPI = async () => {
   return null
 }
 
-export const PlayerContext = createContext<{
-  player: Player | null;
-  setPlayer: (player: Player | null) => void;
-}>({
-  player: null,
-  setPlayer: () => {},
-});
-
-const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
-  const [player, setPlayer] = useState<Player | null>(null);
-
-  useEffect(() => {
-    let isActive = true;
-    TestAPI()
-      .then((result) => {
-        if (isActive) {
-          setPlayer(result);
-        }
-      })
-      .catch((error) => {
-        console.error('Échec du chargement des données du joueur :', error);
-      })
-
-    return () => {
-      isActive = false;
-    };
-  }, []);
-  return (
-    <PlayerContext value={{ player, setPlayer }}>
-      {children}
-    </PlayerContext>
-  );
-};
-
-
 function App() {
-
-  /*Ici, puisque ce n'est pas la version définitive, je n’ai pas fait de wrapper.
-  Il faudra en faire un quand il y aura la méthode de connexion.*/
-
   return (
     <PlayerProvider>
       <Routes>
@@ -196,4 +150,3 @@ function App() {
 }
 
 export default App
-export { PlayerContext as CounterContext, PlayerProvider };
