@@ -76,15 +76,6 @@ function GameGridPlay() {
             gameGridPlay = theGameGrids.PlayGameGridPlayer2; // Si on est le joueur 2.
         }
 
-        // début debug
-        // console.log("Le joueur à gagner !");
-        // EndedGame(
-        //     player.player.id,
-        //     thisIsPlayerOne,
-        //     player.playerHeaders,
-        // )
-        // fin debug
-
         return (
             gameGridPlay.map((column, colIndex) => (
                 <React.Fragment key={crypto.randomUUID()}>

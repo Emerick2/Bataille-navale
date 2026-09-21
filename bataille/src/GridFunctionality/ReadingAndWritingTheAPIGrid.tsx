@@ -103,16 +103,6 @@ export const ItIsPlayerOneTurn = async (player: Player, gameId: number, playerHe
     }
 }
 
-/*
-Fontion pour arrêter la partie.
-
-Elle vas :
-- Mettre la partie en finie.
-- Stocker une valeur pour savoir si le joueur 1 à gagner.
-
-A chaque fois, avant de commencer la partie, il faut vérifier que la partie est en cours.
-*/
-
 export const EndedGame = async (gameId : number, thePlayerOneVictory : boolean, playerHeaders : PlayerHeaders) => {
     try {
         const gameResponse = await request(`/games/${gameId}`, {
@@ -134,8 +124,8 @@ export const EndedGame = async (gameId : number, thePlayerOneVictory : boolean, 
             },
             body: JSON.stringify({
                 state: game.state,
-                // ended: true,
-                endData: thePlayerOneVictory.toString()
+                ended: true,
+                endData: JSON.stringify({ playerOneVictory: thePlayerOneVictory }),
             }),
         });
         
