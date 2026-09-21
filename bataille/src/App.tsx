@@ -112,7 +112,11 @@ export const TestAPI = async () => {
     })
     // console.log('Tableau final lu par le joueur 1 :', JSON.parse(finalGame.state));
 
-    const player : Player = {player:playerOne, playerHeaders : playerOneHeaders};
+    const player : Player = {
+      player: finalGame,
+      playerHeaders: playerOneHeaders,
+      userId: playerOne.user.id,
+    };
 
 
 

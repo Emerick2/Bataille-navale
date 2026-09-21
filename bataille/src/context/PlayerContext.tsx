@@ -7,7 +7,11 @@ export interface GameData{
     minPlayers: number;
     maxPlayers: number;
     status: "pending" | "started" | "ended";
-    players: Object;
+    players: Array<{
+        id: number;
+        email: string;
+        profilePicture: string | null;
+    }>;
     currentTurnUserId: number;
     isYourTurn: boolean;
     state: string;
@@ -24,6 +28,7 @@ export interface PlayerHeaders{
 export interface Player{
     player : GameData;
     playerHeaders : PlayerHeaders;
+    userId: number;
 }
 
 export const PlayerContext = createContext<{ player: Player | null; setPlayer: (player: Player | null) => void; }>({

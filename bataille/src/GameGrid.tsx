@@ -1,6 +1,6 @@
 import './GameGrid.css'
 import React, {useContext} from 'react';
-import {WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
+import {ItIsPlayerOneTurn, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
 import {PlayerContext} from './context/PlayerContext';
 
 export const numberOfBoat : number = 9;
@@ -39,6 +39,9 @@ function GameGridPlay() {
     console.log("En jeu :")
     if (player != null){
         console.log(player.player.state);
+        console.log(TheCurrentPlayerIsPlayerOne(player));
+        ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders)
+            .then((isPlayerOneTurn) => console.log(isPlayerOneTurn));
     }
     if (player != null){
         const theGameGrids : TheGameGrids = JSON.parse(player.player.state);
@@ -89,9 +92,18 @@ function GameGridPlay() {
                                             state: serializedBoard,
                                             },
                                         });
+                                        const nextPlayer = player.player.players.find(
+                                            (gamePlayer) => gamePlayer.id !== player.userId,
+                                        );
+
+                                        if (!nextPlayer) {
+                                            console.error("Impossible de trouver le joueur suivant.");
+                                            return;
+                                        }
+
                                         WritePartOfTheGame(
                                             player.player.id,
-                                            player.player.creatorId,
+                                            nextPlayer.id,
                                             player.playerHeaders,
                                             serializedBoard
                                         ).catch((err) => console.error("Erreur lors de la sauvegarde sur l'API :", err));
