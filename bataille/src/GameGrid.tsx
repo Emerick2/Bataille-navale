@@ -18,8 +18,13 @@ function MyGameGrid() {
     const { player } = useContext(PlayerContext);
     if (player != null){
         const theGameGrids : TheGameGrids = JSON.parse(player.player.state);
+        let gridBoat : number[][] = theGameGrids.GameGridPlayer1;
+        if (TheCurrentPlayerIsPlayerOne(player) == false){
+            gridBoat = theGameGrids.GameGridPlayer2;
+        }
+
         return (
-            theGameGrids.GameGridPlayer1.map((column, colIndex) => (
+            gridBoat.map((column, colIndex) => (
                 <React.Fragment key={colIndex}>
                     <div className="lineCase">
                         {column.map((line, lineIndex) => (
@@ -36,16 +41,21 @@ function MyGameGrid() {
 
 function GameGridPlay() {
     const { player, setPlayer } = useContext(PlayerContext);
-    console.log("En jeu :")
+    // console.log("En jeu :")
+    let itIsOurTurn : boolean = false;
     if (player != null){
-        console.log(player.player.state);
-        console.log(TheCurrentPlayerIsPlayerOne(player));
+        // console.log(player.player.state);
+        // console.log(TheCurrentPlayerIsPlayerOne(player));
         ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders)
-            .then((isPlayerOneTurn) => console.log(isPlayerOneTurn));
+            .then((isPlayerOneTurn) => itIsOurTurn = isPlayerOneTurn);
     }
+
     if (player != null){
         const theGameGrids : TheGameGrids = JSON.parse(player.player.state);
-        const gameGridPlay : number[][] = theGameGrids.PlayGameGridPlayer1; // Si on est le joueur 1.
+        let gameGridPlay : number[][] = theGameGrids.PlayGameGridPlayer1; // Si on est le joueur 1.
+        if (TheCurrentPlayerIsPlayerOne(player) == false){
+            gameGridPlay = theGameGrids.PlayGameGridPlayer2; // Si on est le joueur 2.
+        }
 
         return (
             gameGridPlay.map((column, colIndex) => (
@@ -53,6 +63,9 @@ function GameGridPlay() {
                     <div className="lineCase">
                         {column.map((line, lineIndex) => (
                             <article key={lineIndex} className={gameGridPlay[colIndex][lineIndex] == 0 ? "caseGameGride caseGameGrideSelected" : "caseGameGride"}  onClick={(e) => {
+                                if (!itIsOurTurn){
+                                    return;
+                                }
                                 const x = lineIndex;
                                 const y = colIndex;
                                 if ((gameGridPlay.length > y && gameGridPlay[y].length > x && gameGridPlay[y][x] == 0) && (theGameGrids.GameGridPlayer2.length > y && theGameGrids.GameGridPlayer2[y].length > x)){
@@ -80,8 +93,11 @@ function GameGridPlay() {
                                         }
                                     }
 
-                                    // Revenir ici pour la variante j1 / j2
-                                    theGameGrids.PlayGameGridPlayer1 = gameGridPlay.map(row => [...row]);
+                                    if (TheCurrentPlayerIsPlayerOne(player)){
+                                        theGameGrids.PlayGameGridPlayer1 = gameGridPlay.map(row => [...row]); // Si le joueur 1 joue.
+                                    } else {
+                                        theGameGrids.PlayGameGridPlayer2 = gameGridPlay.map(row => [...row]); // Si le joueur 2 joue.
+                                    }
                                     const serializedBoard : string = JSON.stringify(theGameGrids);
 
                                     if (player != null) {
@@ -120,7 +136,7 @@ function GameGridPlay() {
             ))
         );
     } else {
-        console.log("Le joueur n'est pas définie !")
+        console.log("Le joueur n'est pas encore définie !")
     }
 }
 
