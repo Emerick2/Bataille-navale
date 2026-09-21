@@ -6,13 +6,13 @@ import { briefingDemo, partiesDemo } from './donnees-demo'
 import HomeStyles from './Home.module.css'
 
 // ces deux valeurs viendront du Context d'authentification.
-const estConnecte = false
+const estConnecte = true
 const prenom = 'Armel'
 
 const Home = () => {
-  const parties = partiesDemo 
-  /*const parties: ResumeAccueil[] = []*/
-  const evenements = briefingDemo 
+ /* const parties = partiesDemo */
+  const parties: ResumeAccueil[] = []
+  const evenements = briefingDemo
 
   const aJouer = parties.filter((partie) => partie.tourDe === 'moi')
   const enAttente = parties.filter((partie) => partie.tourDe === 'adversaire')
