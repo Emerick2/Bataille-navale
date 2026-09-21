@@ -263,6 +263,46 @@ export async function setGameState(req: Request, gameId: number): Promise<Respon
   return json(toGamePayload(getGameRow(gameId), user.id));
 }
 
+// export async function setGameEnd(req: Request, gameId: number): Promise<Response> {
+//   const user = requireAuth(req);
+//   const game = getGameRow(gameId);
+
+//   if (!isPlayer(gameId, user.id)) {
+//     throw new HttpError(403, "You are not a player in this game");
+//   }
+//   if (game.status !== "started") {
+//     throw new HttpError(400, "Game is not currently in progress");
+//   }
+//   if (game.current_turn_user_id !== user.id) {
+//     throw new HttpError(403, "It is not your turn");
+//   }
+
+//   const body = await readJsonBody(req);
+//   const state = requireString(body, "state");
+//   const ended = body.ended === true;
+
+//   if (ended) {
+//     const endData = optionalString(body, "endData") ?? null;
+//     db.prepare(
+//       `UPDATE games
+//        SET status = 'ended', state = ?, end_data = ?, current_turn_user_id = NULL, ended_at = datetime('now')
+//        WHERE id = ?`,
+//     ).run(state, endData, gameId);
+//   } else {
+//     const nextTurnUserId = requireInt(body, "currentTurnUserId");
+//     if (!isPlayer(gameId, nextTurnUserId)) {
+//       throw new HttpError(400, "currentTurnUserId must be one of the game's players");
+//     }
+//     db.prepare("UPDATE games SET state = ?, current_turn_user_id = ? WHERE id = ?").run(
+//       state,
+//       nextTurnUserId,
+//       gameId,
+//     );
+//   }
+
+//   return json(toGamePayload(getGameRow(gameId), user.id));
+// }
+
 export function listGameHistory(req: Request): Response {
   const user = requireAuth(req);
   const rows = db

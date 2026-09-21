@@ -1,7 +1,8 @@
 import './GameGrid.css'
-import React, {useContext} from 'react';
-import {ItIsPlayerOneTurn, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
+import React, {useContext, useState} from 'react';
+import {EndedGame, ItIsPlayerOneTurn, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
 import {PlayerContext} from './context/PlayerContext';
+import {GameInProgressPlayer, HistoryPlayer} from './GridFunctionality/DataPlayerAPI';
 
 export const numberOfBoat : number = 9;
 
@@ -53,9 +54,20 @@ function GameGridPlay() {
     if (player != null){
         const theGameGrids : TheGameGrids = JSON.parse(player.player.state);
         let gameGridPlay : number[][] = theGameGrids.PlayGameGridPlayer1; // Si on est le joueur 1.
+        let thisIsPlayerOne = true;
         if (TheCurrentPlayerIsPlayerOne(player) == false){
+            thisIsPlayerOne = false;
             gameGridPlay = theGameGrids.PlayGameGridPlayer2; // Si on est le joueur 2.
         }
+
+        // début debug
+        // console.log("Le joueur à gagner !");
+        // EndedGame(
+        //     player.player.id,
+        //     thisIsPlayerOne,
+        //     player.playerHeaders,
+        // )
+        // fin debug
 
         return (
             gameGridPlay.map((column, colIndex) => (
@@ -86,6 +98,11 @@ function GameGridPlay() {
                                                     if (numberOfSunkenBoat >= numberOfBoat){
                                                         // ↓ -------------------------↓ !! ↓------------------------- ↓
                                                         console.log("Le joueur à gagner !");
+                                                        EndedGame(
+                                                            player.player.id,
+                                                            thisIsPlayerOne,
+                                                            player.playerHeaders,
+                                                        )
                                                         // ↑ -------------------------↑ !! ↑------------------------- ↑
                                                     }
                                                 }
@@ -143,15 +160,19 @@ function GameGridPlay() {
 
 function GameGrid() {
     const { player } = useContext(PlayerContext);
-    let itIsOurTurn : boolean = false;
+    const [itIsOurTurn, setItIsOurTurn] = useState<boolean>(false);
+
     if (player != null){
         ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders)
-            .then((isPlayerOneTurn) => itIsOurTurn = isPlayerOneTurn);
+            .then((isPlayerOneTurn) => setItIsOurTurn(isPlayerOneTurn));
+        
+        HistoryPlayer(player.playerHeaders);
+        GameInProgressPlayer(player.playerHeaders)
     }
 
     return (
         <section className='theGrids'>
-            {/* {itIsOurTurn ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>} */}
+            {itIsOurTurn ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>}
             <MyGameGrid/>
             <br/><br/><br/>
             <GameGridPlay/>
