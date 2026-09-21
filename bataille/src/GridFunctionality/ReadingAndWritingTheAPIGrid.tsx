@@ -93,7 +93,7 @@ export const ItIsPlayerOneTurn = async (player: Player, gameId: number, playerHe
         if (response != null) {
             if (!response.ok) return false;
             const gameData: GameData = await response.json();
-            return gameData.currentTurnUserId === player.player.creatorId;
+            return gameData.currentTurnUserId === player.player.creatorId && gameData.status === "started";
         } else {
             return false;
         }

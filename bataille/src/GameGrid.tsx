@@ -1,7 +1,7 @@
 import './GameGrid.css'
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {EndedGame, ItIsPlayerOneTurn, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
-import {PlayerContext} from './context/PlayerContext';
+import {PlayerContext, type Player} from './context/PlayerContext';
 import {GameInProgressPlayer, HistoryPlayer} from './GridFunctionality/DataPlayerAPI';
 
 export const numberOfBoat : number = 9;
@@ -42,14 +42,30 @@ function MyGameGrid() {
 
 function GameGridPlay() {
     const { player, setPlayer } = useContext(PlayerContext);
-    // console.log("En jeu :")
-    let itIsOurTurn : boolean = false;
-    if (player != null){
-        // console.log(player.player.state);
-        // console.log(TheCurrentPlayerIsPlayerOne(player));
-        ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders)
-            .then((isPlayerOneTurn) => itIsOurTurn = isPlayerOneTurn);
-    }
+    const [itIsOurTurn, setItIsOurTurn] = useState<boolean>(false);
+    
+    useEffect(() => {
+        if (!player) return;
+        let active = true;
+
+        const refreshTurn = async () => {
+            const isPlayerOneTurn = await ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders);
+
+            if (active) {
+                setItIsOurTurn(isPlayerOneTurn);
+            }
+        };
+
+        refreshTurn();
+
+        const timer = window.setInterval(refreshTurn, 5000);
+
+        return () => {
+            active = false;
+            window.clearInterval(timer);
+        };
+    }, [player]);
+
 
     if (player != null){
         const theGameGrids : TheGameGrids = JSON.parse(player.player.state);
