@@ -160,23 +160,32 @@ function GameGridPlay() {
 
 function GameGrid() {
     const { player } = useContext(PlayerContext);
-    const [itIsOurTurn, setItIsOurTurn] = useState<boolean>(false);
+    const [itIsOurTurn, setItIsOurTurn] = useState<number>(-1);
 
     if (player != null){
         ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders)
-            .then((isPlayerOneTurn) => setItIsOurTurn(isPlayerOneTurn));
-        
-        HistoryPlayer(player.playerHeaders);
-        GameInProgressPlayer(player.playerHeaders)
+            .then((isPlayerOneTurn) => {
+                let valeur = 0;
+                if (isPlayerOneTurn == true){
+                    valeur = 1;
+                }
+                setItIsOurTurn(valeur)
+            });
+        // HistoryPlayer(player.playerHeaders);
+        // GameInProgressPlayer(player.playerHeaders)
     }
 
     return (
-        <section className='theGrids'>
-            {itIsOurTurn ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>}
-            <MyGameGrid/>
-            <br/><br/><br/>
-            <GameGridPlay/>
-        </section>
+        <>
+            {itIsOurTurn == -1 ? <p>Chargement en cours...</p> :
+                <section className='theGrids'>
+                    {itIsOurTurn == 1 ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>}
+                    <MyGameGrid/>
+                    <br/><br/><br/>
+                    <GameGridPlay/>
+                </section>
+            }
+        </>
     );
 }
 
