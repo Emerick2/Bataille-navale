@@ -1,6 +1,6 @@
 import './GameGrid.css'
 import React, {useContext, useEffect, useState} from 'react';
-import {EndedGame, ItIsPlayerOneTurn, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
+import { EndedGame, ItIsPlayerOneTurn, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
 import {PlayerContext} from './context/PlayerContext';
 
 export const numberOfBoat : number = 9;
@@ -189,7 +189,7 @@ function GameGridPlay() {
 
 
 function GameGrid() {
-    const { player } = useContext(PlayerContext);
+    const { player, setPlayer } = useContext(PlayerContext);
     const [itIsOurTurn, setItIsOurTurn] = useState<number>(-1);
 
     if (player != null){
@@ -209,13 +209,23 @@ function GameGrid() {
 
     return (
         <>
-            {itIsOurTurn == -1 ? <p>Chargement en cours...</p> :
-                <section className='theGrids'>
-                    {itIsOurTurn == 1 ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>}
-                    <MyGameGrid/>
-                    <br/><br/><br/>
-                    <GameGridPlay/>
-                </section>
+            {player == null || player.player == null ? 
+                <>
+                    <p>Vous n'avez pas encore lancé une partie.</p>
+                    <button onClick={() => {
+                        // ConnexionALaPartie(2, player, setPlayer);
+                    }}>Lancer la partie de test</button>
+                </> : 
+                <>
+                    {itIsOurTurn == -1 ? <p>Chargement en cours...</p> :
+                        <section className='theGrids'>
+                            {itIsOurTurn == 1 ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>}
+                            <MyGameGrid/>
+                            <br/><br/><br/>
+                            <GameGridPlay/>
+                        </section>
+                    }
+                </>
             }
         </>
     );

@@ -26,10 +26,10 @@ export default function Login() {
                 }) 
             })
 
-            const data = await response.json(); 
+            const data : GameData = await response.json(); 
             const playerHeaders = { Authorization: `Bearer ${data.token}` }
             const player : Player = {
-                player : null,
+                player : data,
                 playerHeaders: playerHeaders,
                 userId: data.user.id,
             }
@@ -42,9 +42,7 @@ export default function Login() {
             } else {
                 setErreur("Erreur de connexion veuillez réesayer !");
             }
-
         }
-
     return (
         <div>
             <div className={styles.container}>

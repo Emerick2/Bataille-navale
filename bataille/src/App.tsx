@@ -42,8 +42,8 @@ export const TestAPI = async () => {
       body: JSON.stringify({ email, password }),
     })
 
-    const playerOne = await signup(playerOneEmail)
-    const playerTwo = await signup(playerTwoEmail)
+    const playerOne : GameData = await signup(playerOneEmail)
+    const playerTwo : GameData = await signup(playerTwoEmail)
     const playerOneHeaders = { Authorization: `Bearer ${playerOne.token}` }
     const playerTwoHeaders = { Authorization: `Bearer ${playerTwo.token}` }
 
@@ -70,6 +70,7 @@ export const TestAPI = async () => {
 
     playerOne.state = serializedBoard
 
+    // lancer la partie en tant que J1
     await request(`/games/${game.id}/start`, {
       method: 'POST',
       headers: playerOneHeaders,
@@ -79,33 +80,34 @@ export const TestAPI = async () => {
       }),
     })
 
-    const boardReadByPlayerOne = await request(`/games/${game.id}`, {
-      headers: playerOneHeaders,
-    })
+    // const boardReadByPlayerOne = await request(`/games/${game.id}`, {
+    //   headers: playerOneHeaders,
+    // })
     // console.log('Tableau lu par le joueur 1 :', JSON.parse(boardReadByPlayerOne.state))
 
-    await request(`/games/${game.id}/state`, {
-      method: 'PUT',
-      headers: playerOneHeaders,
-      body: JSON.stringify({
-        state: serializedBoard,
-        currentTurnUserId: playerTwo.user.id,
-      }),
-    })
+    // regarder les stats :
+    // await request(`/games/${game.id}/state`, {
+    //   method: 'PUT',
+    //   headers: playerOneHeaders,
+    //   body: JSON.stringify({
+    //     state: serializedBoard,
+    //     currentTurnUserId: playerTwo.user.id,
+    //   }),
+    // })
 
-    const boardReadByPlayerTwo = await request(`/games/${game.id}`, {
-      headers: playerTwoHeaders,
-    })
+    // const boardReadByPlayerTwo = await request(`/games/${game.id}`, {
+    //   headers: playerTwoHeaders,
+    // })
     // console.log('Tableau lu par le joueur 2 :', JSON.parse(boardReadByPlayerTwo.state))
 
-    await request(`/games/${game.id}/state`, {
-      method: 'PUT',
-      headers: playerTwoHeaders,
-      body: JSON.stringify({
-        state: serializedBoard,
-        currentTurnUserId: playerOne.user.id,
-      }),
-    })
+    // await request(`/games/${game.id}/state`, {
+    //   method: 'PUT',
+    //   headers: playerTwoHeaders,
+    //   body: JSON.stringify({
+    //     state: serializedBoard,
+    //     currentTurnUserId: playerOne.user.id,
+    //   }),
+    // })
 
     const finalGame = await request(`/games/${game.id}`, {
       headers: playerOneHeaders,

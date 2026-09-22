@@ -12,6 +12,9 @@ export interface GameData{
         email: string;
         profilePicture: string | null;
     }>;
+    user: {
+        id:number;
+    };
     currentTurnUserId: number;
     isYourTurn: boolean;
     state: string;
@@ -20,6 +23,7 @@ export interface GameData{
     startedAt: Object;
     endedAt: Object;
     playerOneVictory: boolean;
+    token : string;
 }
 
 export interface PlayerHeaders{
@@ -27,7 +31,7 @@ export interface PlayerHeaders{
 }
 
 export interface Player{
-    player : GameData | null;
+    player : GameData;
     playerHeaders : PlayerHeaders;
     userId: number;
 }
@@ -47,7 +51,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
             TestAPI()
             .then((result) => {
                 if (isActive) {
-                setPlayer(result);
+                    setPlayer(result);
                 }
             })
             .catch((error) => {

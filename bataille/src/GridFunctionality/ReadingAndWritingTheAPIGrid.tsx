@@ -1,4 +1,7 @@
-import type {GameData, Player, PlayerHeaders} from "../context/PlayerContext";
+import {useContext} from "react";
+import {PlayerContext, type GameData, type Player, type PlayerHeaders} from "../context/PlayerContext";
+import {BuildTheBoard, CleanGrid} from "./CreationOfTheGrid";
+import type {TheGameGrids} from "../GameGrid";
 
 export const request = async (path: string, options: RequestInit = {})   => {
   const apiUrl = 'http://localhost:8000';
@@ -144,3 +147,69 @@ export const EndedGame = async (gameId : number, thePlayerOneVictory : boolean, 
         console.error(error);
     }
 }
+
+
+/*
+export const ConnexionALaPartie = async (identifiantPartie : number, player : Player | null, setPlayer : (player : Player | null) => void) => {
+    // Je vais volontairement beaucoup commenter la fonction pour facilitée ça découpe.
+    if (player != null) {
+        if (player.player == null){
+            return;
+        }
+
+        const mailInvitée = "playerTwoEmail@a.com"
+
+        // Création de la carte du jeu :
+        const board : TheGameGrids = {
+            GameGridPlayer1 : BuildTheBoard(),
+            GameGridPlayer2 : BuildTheBoard(),
+            PlayGameGridPlayer1 : CleanGrid(),
+            PlayGameGridPlayer2 : CleanGrid(),
+        };
+        
+        const serializedBoard : string = JSON.stringify(board)
+        player.player.state = serializedBoard
+
+        try {
+            // ici je créé une partie, cela renvoie un objet de type encore inconnu, je le crérais plus tard.
+            const game : any = await request('/games', {
+                method: 'POST',
+                headers: player.playerHeaders,
+                body: JSON.stringify({ minPlayers: 2, maxPlayers: 2 }),
+            })
+
+            // Ici, on envoie une invitation. Cela devras donc être dans la fonction de création de la partie.
+            await request(`/games/${game.id}/invite`, {
+                method: 'POST',
+                headers: player.playerHeaders,
+                body: JSON.stringify({ email: mailInvitée }),
+            })
+
+            // Lancer la partie
+            await request(`/games/${identifiantPartie}/start`, {
+                method: 'POST',
+                headers: player.playerHeaders,
+                body: JSON.stringify({
+                    state: serializedBoard,
+                    currentTurnUserId: player.player.user.id,
+                }),
+            })
+
+            // prendre les données du jeux
+            const finalGame = await request(`/games/${identifiantPartie}`, {
+                headers: player.playerHeaders,
+            })
+            
+            const newPlayer : Player = {
+                player: finalGame,
+                playerHeaders: player.playerHeaders,
+                userId: player.player.user.id,
+            };
+            
+            setPlayer(newPlayer);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+}
+*/
