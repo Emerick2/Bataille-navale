@@ -12,6 +12,7 @@ import NotFound from './pages/NotFound/NotFound'
 import {type TheGameGrids} from './GameGrid'
 import {PlayerProvider, type Player} from './context/PlayerContext'
 import {BuildTheBoard, CleanGrid} from './GridFunctionality/CreationOfTheGrid'
+import Credits from './pages/Credits/Credits'
 
 // const TestAPI = async (player : Player | null, setPlayer: (player: Player | null) => void) => {
 export const TestAPI = async () => {
@@ -142,6 +143,7 @@ function App() {
               <Route path="/historique" element={<History/>} />
               <Route path="/connexion" element={<Login/>} />
               <Route path="/inscription" element={<Register/>} />
+              <Route path="/credits" element={<Credits/>} />
           </Route>
         <Route path="*" element={<NotFound/>} />
       </Routes>
