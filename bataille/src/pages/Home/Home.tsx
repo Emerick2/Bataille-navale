@@ -12,7 +12,7 @@ const prenom = 'Armel'
 const Home = () => {
   const parties = partiesDemo 
   /*const parties: ResumeAccueil[] = []*/
-  const evenements = briefingDemo 
+  const evenements = briefingDemo
 
   const aJouer = parties.filter((partie) => partie.tourDe === 'moi')
   const enAttente = parties.filter((partie) => partie.tourDe === 'adversaire')
