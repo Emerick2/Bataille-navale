@@ -22,8 +22,8 @@ export const ReadPartOfTheGame = async (gameId: number, playerHeaders: PlayerHea
         })
 
         return response;
-    } catch (erreur) {
-        console.error(erreur);
+    } catch (error) {
+        console.error(error);
         return null;
     }
 }
@@ -42,8 +42,8 @@ export const WritePartOfTheGame = async (gameId : number, userID : number, playe
         })
 
         return response;
-    } catch (erreur) {
-        return erreur;
+    } catch (error) {
+        return error;
     }
 }
 
@@ -78,8 +78,8 @@ export const AdvanceToTheNextRound = async (gameId : number, userID : number, pl
         console.log("tours suivant !");
 
         return response;
-    } catch (erreur) {
-        console.log(erreur);
+    } catch (error) {
+        console.error(error);
     }
 }
 
@@ -93,12 +93,46 @@ export const ItIsPlayerOneTurn = async (player: Player, gameId: number, playerHe
         if (response != null) {
             if (!response.ok) return false;
             const gameData: GameData = await response.json();
-            return gameData.currentTurnUserId === player.player.creatorId;
+            return gameData.currentTurnUserId === player.player.creatorId && gameData.status === "started";
         } else {
             return false;
         }
-    } catch (erreur){
-        console.log(erreur);
+    } catch (error){
+        console.error(error);
         return false;
+    }
+}
+
+export const EndedGame = async (gameId : number, thePlayerOneVictory : boolean, playerHeaders : PlayerHeaders) => {
+    try {
+        const gameResponse = await request(`/games/${gameId}`, {
+            method: 'GET',
+            headers: {
+                ...playerHeaders,
+            },
+        });
+        
+        if (!gameResponse.ok) {
+            throw new Error(`Impossible de récupérer la partie : ${gameResponse.status}`);
+        }
+
+        const game = await gameResponse.json() as { state: string };
+        const response = await request(`/games/${gameId}/state`, {
+            method: 'PUT',
+            headers: {
+                ...playerHeaders,
+            },
+            body: JSON.stringify({
+                state: game.state,
+                ended: true,
+                endData: JSON.stringify({ playerOneVictory: thePlayerOneVictory }),
+            }),
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Impossible de finir la partie : ${response.status}`);
+        }
+    } catch (error) {
+        console.error(error);
     }
 }

@@ -19,6 +19,7 @@ export interface GameData{
     createdAt: string;
     startedAt: Object;
     endedAt: Object;
+    playerOneVictory: boolean;
 }
 
 export interface PlayerHeaders{
@@ -52,7 +53,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
         })
 
         return () => {
-        isActive = false;
+            isActive = false;
         };
     }, []);
     return (

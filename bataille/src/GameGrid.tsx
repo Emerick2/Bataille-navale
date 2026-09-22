@@ -1,6 +1,6 @@
 import './GameGrid.css'
-import React, {useContext} from 'react';
-import {ItIsPlayerOneTurn, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
+import React, {useContext, useEffect, useState} from 'react';
+import {EndedGame, ItIsPlayerOneTurn, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
 import {PlayerContext} from './context/PlayerContext';
 
 export const numberOfBoat : number = 9;
@@ -41,19 +41,37 @@ function MyGameGrid() {
 
 function GameGridPlay() {
     const { player, setPlayer } = useContext(PlayerContext);
-    // console.log("En jeu :")
-    let itIsOurTurn : boolean = false;
-    if (player != null){
-        // console.log(player.player.state);
-        // console.log(TheCurrentPlayerIsPlayerOne(player));
-        ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders)
-            .then((isPlayerOneTurn) => itIsOurTurn = isPlayerOneTurn);
-    }
+    const [itIsOurTurn, setItIsOurTurn] = useState<boolean>(false);
+    
+    useEffect(() => {
+        if (!player) return;
+        let active = true;
+
+        const refreshTurn = async () => {
+            const isPlayerOneTurn = await ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders);
+
+            if (active) {
+                setItIsOurTurn(isPlayerOneTurn);
+            }
+        };
+
+        refreshTurn();
+
+        const timer = window.setInterval(refreshTurn, 5000);
+
+        return () => {
+            active = false;
+            window.clearInterval(timer);
+        };
+    }, [player]);
+
 
     if (player != null){
         const theGameGrids : TheGameGrids = JSON.parse(player.player.state);
         let gameGridPlay : number[][] = theGameGrids.PlayGameGridPlayer1; // Si on est le joueur 1.
+        let thisIsPlayerOne = true;
         if (TheCurrentPlayerIsPlayerOne(player) == false){
+            thisIsPlayerOne = false;
             gameGridPlay = theGameGrids.PlayGameGridPlayer2; // Si on est le joueur 2.
         }
 
@@ -86,6 +104,11 @@ function GameGridPlay() {
                                                     if (numberOfSunkenBoat >= numberOfBoat){
                                                         // ↓ -------------------------↓ !! ↓------------------------- ↓
                                                         console.log("Le joueur à gagner !");
+                                                        EndedGame(
+                                                            player.player.id,
+                                                            thisIsPlayerOne,
+                                                            player.playerHeaders,
+                                                        )
                                                         // ↑ -------------------------↑ !! ↑------------------------- ↑
                                                     }
                                                 }
@@ -143,19 +166,30 @@ function GameGridPlay() {
 
 function GameGrid() {
     const { player } = useContext(PlayerContext);
-    let itIsOurTurn : boolean = false;
+    const [itIsOurTurn, setItIsOurTurn] = useState<number>(-1);
+
     if (player != null){
         ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders)
-            .then((isPlayerOneTurn) => itIsOurTurn = isPlayerOneTurn);
+            .then((isPlayerOneTurn) => {
+                let valeur = 0;
+                if (isPlayerOneTurn == true){
+                    valeur = 1;
+                }
+                setItIsOurTurn(valeur)
+            });
     }
 
     return (
-        <section className='theGrids'>
-            {/* {itIsOurTurn ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>} */}
-            <MyGameGrid/>
-            <br/><br/><br/>
-            <GameGridPlay/>
-        </section>
+        <>
+            {itIsOurTurn == -1 ? <p>Chargement en cours...</p> :
+                <section className='theGrids'>
+                    {itIsOurTurn == 1 ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>}
+                    <MyGameGrid/>
+                    <br/><br/><br/>
+                    <GameGridPlay/>
+                </section>
+            }
+        </>
     );
 }
 

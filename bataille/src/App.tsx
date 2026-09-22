@@ -118,8 +118,6 @@ export const TestAPI = async () => {
       userId: playerOne.user.id,
     };
 
-
-
     // console.log("Ma fonction de lecture :")
     // console.log(await ReadPartOfTheGame(game.id))
     return player
