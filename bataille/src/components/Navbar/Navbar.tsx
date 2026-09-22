@@ -14,6 +14,7 @@ const Navbar = () => {
             <NavLink to="/historique" className={classeLien}>Historique</NavLink>
             <NavLink to="/connexion" className={classeLien}>Connexion</NavLink>
             <NavLink to="/inscription" className={classeLien}>Inscription</NavLink>
+            <NavLink to="/Credits" className={classeLien}>Crédits</NavLink>
         </nav>
     );
 };
