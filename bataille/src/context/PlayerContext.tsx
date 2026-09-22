@@ -27,7 +27,7 @@ export interface PlayerHeaders{
 }
 
 export interface Player{
-    player : GameData;
+    player : GameData | null;
     playerHeaders : PlayerHeaders;
     userId: number;
 }
@@ -39,23 +39,27 @@ export const PlayerContext = createContext<{ player: Player | null; setPlayer: (
 
 export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     const [player, setPlayer] = useState<Player | null>(null);
+    const debug = false;
 
-    useEffect(() => {
-        let isActive = true;
-        TestAPI()
-        .then((result) => {
-            if (isActive) {
-            setPlayer(result);
-            }
-        })
-        .catch((error) => {
-            console.error('Échec du chargement des données du joueur :', error);
-        })
+    if (debug) {
+        useEffect(() => {
+            let isActive = true;
+            TestAPI()
+            .then((result) => {
+                if (isActive) {
+                setPlayer(result);
+                }
+            })
+            .catch((error) => {
+                console.error('Échec du chargement des données du joueur :', error);
+            })
 
-        return () => {
-            isActive = false;
-        };
-    }, []);
+            return () => {
+                isActive = false;
+            };
+        }, []);
+    }
+    
     return (
         <PlayerContext.Provider value={{ player, setPlayer }}>
         {children}

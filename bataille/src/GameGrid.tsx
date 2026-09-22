@@ -17,6 +17,10 @@ export const height : number = 10;
 function MyGameGrid() {
     const { player } = useContext(PlayerContext);
     if (player != null){
+        if (player.player == null){
+            console.log("Le joueur ne joue pas.");
+            return;
+        }
         const theGameGrids : TheGameGrids = JSON.parse(player.player.state);
         let gridBoat : number[][] = theGameGrids.GameGridPlayer1;
         if (TheCurrentPlayerIsPlayerOne(player) == false){
@@ -42,12 +46,20 @@ function MyGameGrid() {
 function GameGridPlay() {
     const { player, setPlayer } = useContext(PlayerContext);
     const [itIsOurTurn, setItIsOurTurn] = useState<boolean>(false);
-    
+
     useEffect(() => {
         if (!player) return;
+        if (player.player == null){
+            console.log("Le joueur ne joue pas.");
+            return;
+        }
         let active = true;
 
         const refreshTurn = async () => {
+            if (player.player == null){
+                console.log("Le joueur ne joue pas.");
+                return false;
+            }
             const isPlayerOneTurn = await ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders);
 
             if (active) {
@@ -67,6 +79,10 @@ function GameGridPlay() {
 
 
     if (player != null){
+        if (player.player == null){
+            console.log("Le joueur ne joue pas.");
+            return;
+        }
         const theGameGrids : TheGameGrids = JSON.parse(player.player.state);
         let gameGridPlay : number[][] = theGameGrids.PlayGameGridPlayer1; // Si on est le joueur 1.
         let thisIsPlayerOne = true;
@@ -75,12 +91,20 @@ function GameGridPlay() {
             gameGridPlay = theGameGrids.PlayGameGridPlayer2; // Si on est le joueur 2.
         }
 
+        if (player.player == null){
+            console.log("Le joueur ne joue pas.");
+            return <p>Vous n'avez pas encore lancé une partie.</p>;
+        }
         return (
             gameGridPlay.map((column, colIndex) => (
                 <React.Fragment key={crypto.randomUUID()}>
                     <div className="lineCase">
                         {column.map((line, lineIndex) => (
                             <article key={crypto.randomUUID()} className={gameGridPlay[colIndex][lineIndex] == 0 ? "caseGameGride caseGameGrideSelected" : "caseGameGride"}  onClick={(e) => {
+                                if (player.player == null){
+                                    console.log("Le joueur ne joue pas.");
+                                    return;
+                                }
                                 if (!itIsOurTurn){
                                     return;
                                 }
@@ -169,6 +193,10 @@ function GameGrid() {
     const [itIsOurTurn, setItIsOurTurn] = useState<number>(-1);
 
     if (player != null){
+        if (player.player == null){
+            console.log("Le joueur ne joue pas.");
+            return;
+        }
         ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders)
             .then((isPlayerOneTurn) => {
                 let valeur = 0;

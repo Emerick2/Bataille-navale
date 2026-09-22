@@ -10,7 +10,7 @@ import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import NotFound from './pages/NotFound/NotFound'
 import {type TheGameGrids} from './GameGrid'
-import {PlayerProvider, type Player} from './context/PlayerContext'
+import {PlayerProvider, type GameData, type Player} from './context/PlayerContext'
 import {BuildTheBoard, CleanGrid} from './GridFunctionality/CreationOfTheGrid'
 
 // const TestAPI = async (player : Player | null, setPlayer: (player: Player | null) => void) => {

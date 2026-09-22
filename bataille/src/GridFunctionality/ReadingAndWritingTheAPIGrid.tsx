@@ -84,10 +84,18 @@ export const AdvanceToTheNextRound = async (gameId : number, userID : number, pl
 }
 
 export const TheCurrentPlayerIsPlayerOne = (player: Player): boolean => {
+    if (player.player == null){
+        console.log("Le joueur ne joue pas.");
+        return false;
+    }
     return player.player.creatorId === player.userId;
 };
 
 export const ItIsPlayerOneTurn = async (player: Player, gameId: number, playerHeaders: PlayerHeaders): Promise<boolean> => {
+    if (player.player == null){
+        console.log("Le joueur ne joue pas.");
+        return false;
+    }
     try{
         const response = await ReadPartOfTheGame(gameId, playerHeaders);
         if (response != null) {
