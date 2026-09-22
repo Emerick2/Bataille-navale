@@ -38,19 +38,22 @@ const LoadHistory = async (player : Player, setLoading : (loading : boolean) => 
     const listOfHistoryBloc : ListOfHistoryBloc = { listOfOngoingGames : [], listOfPendingGames : [], listOfCompletedGames : [], gamesWin : 0, totalGames : 0, winPercentage : 0, };
     const history : GameData[] = await HistoryPlayer(player.playerHeaders);
     const gameInProgress : GameData[] = await GameInProgressPlayer(player.playerHeaders);
-    
     for (let i = 0; i < gameInProgress.length; i++) {
-        // console.log(gameInProgress[0].createdAt);
+        history.push(gameInProgress[i]);
+    }
+
+    for (let i = 0; i < history.length; i++) {
+        // console.log(history[0].createdAt);
         const newObject : HistoryBloc = {
-            nameOne : gameInProgress[0].creatorId.toString(),
-            // nameTwo : gameInProgress[0].players.id.toString(),
+            nameOne : history[0].creatorId.toString(),
+            // nameTwo : history[0].players.id.toString(),
             nameTwo : "Nom2",
-            status : gameInProgress[0].status, // revenir ici pour mettre la bonne valeur.
-            createdAt : gameInProgress[0].createdAt,
+            status : history[0].status, // revenir ici pour mettre la bonne valeur.
+            createdAt : history[0].createdAt,
         };
-        if (gameInProgress[0].status == "pending"){
+        if (history[0].status == "pending"){
             listOfHistoryBloc.listOfPendingGames.push(newObject);
-        } else if (gameInProgress[0].status == "started"){
+        } else if (history[0].status == "started"){
             listOfHistoryBloc.listOfOngoingGames.push(newObject);
         } else {
             listOfHistoryBloc.listOfCompletedGames.push(newObject);
