@@ -8,7 +8,7 @@ export default function Credits() {
             <h1>Crédits</h1>
             <p>Membres de l'équipe :</p>
             <ul className={styles.equipe}>
-                <li>Emerick Pacaud</li>
+                <li>Émerick Pacaud</li>
                 <li>Armel Zion</li>
                 <li>Paul-Elie Kouakou</li>
             </ul>   

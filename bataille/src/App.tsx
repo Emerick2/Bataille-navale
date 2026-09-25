@@ -15,7 +15,7 @@ import {BuildTheBoard, CleanGrid} from './GridFunctionality/CreationOfTheGrid'
 import Credits from './pages/Credits/Credits'
 
 // const TestAPI = async (player : Player | null, setPlayer: (player: Player | null) => void) => {
-export const TestAPI = async () => {
+export const TestAPI = async () : Promise<Player | null> => {
   const apiUrl = 'http://localhost:8000'
   const password = 'hunter2'
   const playerOneEmail = `test-joueur-1-${Date.now()}@example.com`

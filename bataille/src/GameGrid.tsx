@@ -1,7 +1,7 @@
 import './GameGrid.css'
 import React, {useContext, useEffect, useState} from 'react';
-import { EndedGame, ItIsPlayerOneTurn, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
-import {PlayerContext} from './context/PlayerContext';
+import {ConnexionALaPartie, EndedGame, ItIsPlayerOneTurn, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
+import {PlayerContext, type Player} from './context/PlayerContext';
 
 export const numberOfBoat : number = 9;
 
@@ -14,14 +14,27 @@ export interface TheGameGrids{
 
 export const height : number = 10;
 
+function getGameGrids(player: Player | null): TheGameGrids | null {
+    if (!player || !player.player || typeof player.player.id !== 'number' || typeof player.player.state !== 'string' || player.player.state.length === 0) {
+        return null;
+    }
+
+    try {
+        const gameGrids = JSON.parse(player.player.state) as TheGameGrids;
+        if (!Array.isArray(gameGrids.GameGridPlayer1) || !Array.isArray(gameGrids.GameGridPlayer2) ||
+            !Array.isArray(gameGrids.PlayGameGridPlayer1) || !Array.isArray(gameGrids.PlayGameGridPlayer2)) {
+            return null;
+        }
+        return gameGrids;
+    } catch {
+        return null;
+    }
+}
+
 function MyGameGrid() {
     const { player } = useContext(PlayerContext);
-    if (player != null){
-        if (player.player == null){
-            console.log("Le joueur ne joue pas.");
-            return;
-        }
-        const theGameGrids : TheGameGrids = JSON.parse(player.player.state);
+    const theGameGrids = getGameGrids(player);
+    if (theGameGrids && player){
         let gridBoat : number[][] = theGameGrids.GameGridPlayer1;
         if (TheCurrentPlayerIsPlayerOne(player) == false){
             gridBoat = theGameGrids.GameGridPlayer2;
@@ -38,9 +51,8 @@ function MyGameGrid() {
                 </React.Fragment>
             ))
         );
-    } else {
-        return <p>Chargement en cours.</p>
     }
+    return <p>Chargement en cours.</p>;
 }
 
 function GameGridPlay() {
@@ -49,8 +61,8 @@ function GameGridPlay() {
 
     useEffect(() => {
         if (!player) return;
-        if (player.player == null){
-            console.log("Le joueur ne joue pas.");
+        const theGameGrids = getGameGrids(player);
+        if (!theGameGrids){
             return;
         }
         let active = true;
@@ -83,7 +95,10 @@ function GameGridPlay() {
             console.log("Le joueur ne joue pas.");
             return;
         }
-        const theGameGrids : TheGameGrids = JSON.parse(player.player.state);
+        const theGameGrids = getGameGrids(player);
+        if (!theGameGrids){
+            return <p>Chargement en cours.</p>;
+        }
         let gameGridPlay : number[][] = theGameGrids.PlayGameGridPlayer1; // Si on est le joueur 1.
         let thisIsPlayerOne = true;
         if (TheCurrentPlayerIsPlayerOne(player) == false){
@@ -99,8 +114,8 @@ function GameGridPlay() {
             gameGridPlay.map((column, colIndex) => (
                 <React.Fragment key={crypto.randomUUID()}>
                     <div className="lineCase">
-                        {column.map((line, lineIndex) => (
-                            <article key={crypto.randomUUID()} className={gameGridPlay[colIndex][lineIndex] == 0 ? "caseGameGride caseGameGrideSelected" : "caseGameGride"}  onClick={(e) => {
+                        {column.map((_line, lineIndex) => (
+                            <article key={crypto.randomUUID()} className={gameGridPlay[colIndex][lineIndex] == 0 ? "caseGameGride caseGameGrideSelected" : "caseGameGride"}  onClick={() => {
                                 if (player.player == null){
                                     console.log("Le joueur ne joue pas.");
                                     return;
@@ -192,28 +207,40 @@ function GameGrid() {
     const { player, setPlayer } = useContext(PlayerContext);
     const [itIsOurTurn, setItIsOurTurn] = useState<number>(-1);
 
-    if (player != null){
-        if (player.player == null){
-            console.log("Le joueur ne joue pas.");
-            return;
+    useEffect(() => {
+        let isActive = true;
+
+        if (!player || !getGameGrids(player)) {
+            setItIsOurTurn(-1);
+            return () => {
+                isActive = false;
+            };
         }
+
         ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders)
             .then((isPlayerOneTurn) => {
-                let valeur = 0;
-                if (isPlayerOneTurn == true){
-                    valeur = 1;
+                if (isActive) {
+                    setItIsOurTurn(isPlayerOneTurn ? 1 : 0);
                 }
-                setItIsOurTurn(valeur)
             });
-    }
+
+        return () => {
+            isActive = false;
+        };
+    }, [player]);
 
     return (
         <>
-            {player == null || player.player == null ? 
+            {!getGameGrids(player) ? 
                 <>
                     <p>Vous n'avez pas encore lancé une partie.</p>
-                    <button onClick={() => {
-                        // ConnexionALaPartie(2, player, setPlayer);
+                    <button onClick={async () => {
+                        try {
+                            const result = await ConnexionALaPartie(undefined, player);
+                            setPlayer(result);
+                        } catch (error) {
+                            console.error('Échec du chargement des données du joueur :', error);
+                        }
                     }}>Lancer la partie de test</button>
                 </> : 
                 <>

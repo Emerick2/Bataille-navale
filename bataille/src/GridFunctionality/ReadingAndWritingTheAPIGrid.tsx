@@ -1,5 +1,4 @@
-import {useContext} from "react";
-import {PlayerContext, type GameData, type Player, type PlayerHeaders} from "../context/PlayerContext";
+import {type GameData, type Player, type PlayerHeaders} from "../context/PlayerContext";
 import {BuildTheBoard, CleanGrid} from "./CreationOfTheGrid";
 import type {TheGameGrids} from "../GameGrid";
 
@@ -149,67 +148,81 @@ export const EndedGame = async (gameId : number, thePlayerOneVictory : boolean, 
 }
 
 
-/*
-export const ConnexionALaPartie = async (identifiantPartie : number, player : Player | null, setPlayer : (player : Player | null) => void) => {
-    // Je vais volontairement beaucoup commenter la fonction pour facilitée ça découpe.
-    if (player != null) {
-        if (player.player == null){
-            return;
+export const ConnexionALaPartie = async (identifiantPartie: number | undefined, player: Player | null): Promise<Player | null> => {
+    if (player == null) {
+        return null;
+    }
+    console.log("Début connexion");
+
+    const mailInvitee = "a@aa";
+    const board: TheGameGrids = {
+        GameGridPlayer1: BuildTheBoard(),
+        GameGridPlayer2: BuildTheBoard(),
+        PlayGameGridPlayer1: CleanGrid(),
+        PlayGameGridPlayer2: CleanGrid(),
+    };
+    const serializedBoard = JSON.stringify(board);
+
+    try {
+        const existingGameResponse: Response | null = identifiantPartie === undefined
+            ? null
+            : await ReadPartOfTheGame(identifiantPartie, player.playerHeaders);
+
+        if (existingGameResponse?.ok) {
+            const existingGame = await existingGameResponse.json() as GameData;
+            return { ...player, player: existingGame };
         }
 
-        const mailInvitée = "playerTwoEmail@a.com"
+        if (existingGameResponse != null && existingGameResponse.status !== 404) {
+            throw new Error(`Impossible de récupérer la partie : ${existingGameResponse.status}`);
+        }
 
-        // Création de la carte du jeu :
-        const board : TheGameGrids = {
-            GameGridPlayer1 : BuildTheBoard(),
-            GameGridPlayer2 : BuildTheBoard(),
-            PlayGameGridPlayer1 : CleanGrid(),
-            PlayGameGridPlayer2 : CleanGrid(),
+        const createResponse = await request('/games', {
+            method: 'POST',
+            headers: { ...player.playerHeaders },
+            body: JSON.stringify({ minPlayers: 2, maxPlayers: 2 }),
+        });
+        if (!createResponse.ok) {
+            throw new Error(`Impossible de créer la partie : ${createResponse.status}`);
+        }
+        const createdGame = await createResponse.json() as GameData;
+        const gameId = createdGame.id;
+
+        const inviteResponse = await request(`/games/${gameId}/invite`, {
+            method: 'POST',
+            headers: { ...player.playerHeaders },
+            body: JSON.stringify({ email: mailInvitee }),
+        });
+        if (!inviteResponse.ok && inviteResponse.status !== 409) {
+            throw new Error(`Impossible d'inviter le joueur : ${inviteResponse.status}`);
+        }
+        if (!inviteResponse.ok) {
+            throw new Error(`Impossible d'inviter le joueur : ${inviteResponse.status}`);
+        }
+
+        const startResponse = await request(`/games/${gameId}/start`, {
+            method: 'POST',
+            headers: { ...player.playerHeaders },
+            body: JSON.stringify({
+                state: serializedBoard,
+                currentTurnUserId: player.userId,
+            }),
+        });
+        if (!startResponse.ok) {
+            throw new Error(`Impossible de démarrer la partie : ${startResponse.status}`);
+        }
+
+        const finalGameResponse = await ReadPartOfTheGame(gameId, player.playerHeaders);
+        if (finalGameResponse == null || !finalGameResponse.ok) {
+            throw new Error(`Impossible de lire la partie créée : ${finalGameResponse?.status ?? 'réseau indisponible'}`);
+        }
+
+        return {
+            ...player,
+            player: await finalGameResponse.json() as GameData,
         };
-        
-        const serializedBoard : string = JSON.stringify(board)
-        player.player.state = serializedBoard
-
-        try {
-            // ici je créé une partie, cela renvoie un objet de type encore inconnu, je le crérais plus tard.
-            const game : any = await request('/games', {
-                method: 'POST',
-                headers: player.playerHeaders,
-                body: JSON.stringify({ minPlayers: 2, maxPlayers: 2 }),
-            })
-
-            // Ici, on envoie une invitation. Cela devras donc être dans la fonction de création de la partie.
-            await request(`/games/${game.id}/invite`, {
-                method: 'POST',
-                headers: player.playerHeaders,
-                body: JSON.stringify({ email: mailInvitée }),
-            })
-
-            // Lancer la partie
-            await request(`/games/${identifiantPartie}/start`, {
-                method: 'POST',
-                headers: player.playerHeaders,
-                body: JSON.stringify({
-                    state: serializedBoard,
-                    currentTurnUserId: player.player.user.id,
-                }),
-            })
-
-            // prendre les données du jeux
-            const finalGame = await request(`/games/${identifiantPartie}`, {
-                headers: player.playerHeaders,
-            })
-            
-            const newPlayer : Player = {
-                player: finalGame,
-                playerHeaders: player.playerHeaders,
-                userId: player.player.user.id,
-            };
-            
-            setPlayer(newPlayer);
-        } catch (error) {
-            console.error(error);
-        }
+    } catch (error) {
+        console.error("Connexion à la partie impossible :", error);
+        return player;
     }
 }
-*/
