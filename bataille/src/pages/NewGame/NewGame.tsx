@@ -28,7 +28,7 @@ const NewGame = () => {
                 Authorization: player.playerHeaders.Authorization,
             },
             body: JSON.stringify({
-                minPlayers: 2,
+                minPlayers: 1,
                 maxPlayers: 2,
             }),
         })

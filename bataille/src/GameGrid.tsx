@@ -19,6 +19,10 @@ function getGameGrids(player: Player | null): TheGameGrids | null {
         return null;
     }
 
+    if (typeof player.player.state !== 'string' || player.player.state.length === 0) {
+        return null;
+    }
+    
     try {
         const gameGrids = JSON.parse(player.player.state) as TheGameGrids;
         if (!Array.isArray(gameGrids.GameGridPlayer1) || !Array.isArray(gameGrids.GameGridPlayer2) ||

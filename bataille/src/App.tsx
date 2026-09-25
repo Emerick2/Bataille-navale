@@ -51,7 +51,7 @@ export const TestAPI = async () : Promise<Player | null> => {
     const game = await request('/games', {
       method: 'POST',
       headers: playerOneHeaders,
-      body: JSON.stringify({ minPlayers: 2, maxPlayers: 2 }),
+      body: JSON.stringify({ minPlayers: 1, maxPlayers: 2 }),
     })
 
     await request(`/games/${game.id}/invite`, {

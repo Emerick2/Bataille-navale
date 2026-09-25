@@ -42,22 +42,22 @@ export const BuildTheBoard = () : number[][] => {
             if (right == false && left == false && up == false && down == false){
                 if (y+1 < height && t[y+1][x] == 0) {
                     up=true;
-                } else if (y-1 < height && t[y-1][x] == 0) {
+                } else if (y-1 >= 0 && t[y-1][x] == 0) {
                     down=true;
                 } else if (x+1 < height && t[y][x+1] == 0) {
                     right=true;
-                } else if (x-1 < height && t[y][x-1] == 0) {
+                } else if (x-1 >= 0 && t[y][x-1] == 0) {
                     left=true;
                 }
             }
 
             if (right && x+1 < height && t[y][x+1] == 0){
                 t[y][x+1] = 1;
-            } else if (left && x-1 < height && t[y][x-1] == 0){
+            } else if (left && x-1 >= 0 && t[y][x-1] == 0){
                 t[y][x-1] = 1;
             } else if (up && y+1 < height && t[y+1][x] == 0){
                 t[y+1][x] = 1;
-            } else if (down && y-1 < height && t[y-1][x+1] == 0){
+            } else if (down && y-1 >= 0 && t[y-1][x] == 0){
                 t[y-1][x] = 1;
             } else {
                 break;
