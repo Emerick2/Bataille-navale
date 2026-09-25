@@ -12,6 +12,10 @@ export interface TheGameGrids{
     PlayGameGridPlayer2 : number[][]; // La grille avec les tentatives J2
 }
 
+interface GameGridPlayProps {
+    itIsOurTurn: boolean;
+}
+
 export const height : number = 10;
 
 function getGameGrids(player: Player | null): TheGameGrids | null {
@@ -59,40 +63,8 @@ function MyGameGrid() {
     return <p>Chargement en cours.</p>;
 }
 
-function GameGridPlay() {
+function GameGridPlay({itIsOurTurn} : GameGridPlayProps) {
     const { player, setPlayer } = useContext(PlayerContext);
-    const [itIsOurTurn, setItIsOurTurn] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (!player) return;
-        const theGameGrids = getGameGrids(player);
-        if (!theGameGrids){
-            return;
-        }
-        let active = true;
-
-        const refreshTurn = async () => {
-            if (player.player == null){
-                console.log("Le joueur ne joue pas.");
-                return false;
-            }
-            const isPlayerOneTurn = await ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders);
-
-            if (active) {
-                setItIsOurTurn(isPlayerOneTurn);
-            }
-        };
-
-        refreshTurn();
-
-        const timer = window.setInterval(refreshTurn, 5000);
-
-        return () => {
-            active = false;
-            window.clearInterval(timer);
-        };
-    }, [player]);
-
 
     if (player != null){
         if (player.player == null){
@@ -221,15 +193,24 @@ function GameGrid() {
             };
         }
 
-        ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders)
-            .then((isPlayerOneTurn) => {
-                if (isActive) {
-                    setItIsOurTurn(isPlayerOneTurn ? 1 : 0);
-                }
-            });
+        const checkTurn = async () => {
+            if (player.player == null){
+                console.log("Le joueur ne joue pas.");
+                return;
+            }
+            const isPlayerOneTurn = await ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders);
+            if (isActive) {
+                setItIsOurTurn(isPlayerOneTurn ? 1 : 0);
+            }
+        };
+
+        checkTurn();
+
+        const timer = window.setInterval(checkTurn, 1500);
 
         return () => {
             isActive = false;
+            window.clearInterval(timer);
         };
     }, [player]);
 
@@ -251,9 +232,9 @@ function GameGrid() {
                     {itIsOurTurn == -1 ? <p>Chargement en cours...</p> :
                         <section className='theGrids'>
                             {itIsOurTurn == 1 ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>}
-                            <MyGameGrid/>
+                            <GameGridPlay itIsOurTurn={itIsOurTurn == 1}/>
                             <br/><br/><br/>
-                            <GameGridPlay/>
+                            <MyGameGrid/>
                         </section>
                     }
                 </>
