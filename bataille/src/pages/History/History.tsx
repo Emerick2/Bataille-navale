@@ -17,11 +17,12 @@ sur une page d'historique spécifique à chaque joueur.
 - pourcentage de partie gagner
 - nombre de partie gagner / nombre partie jouer
 */
-interface HistoryBloc{
+export interface HistoryBloc{
     nameOne : string;
     nameTwo : string;
     status : string;
     createdAt : string;
+    idGame : number;
 }
 
 interface ListOfHistoryBloc{
@@ -50,6 +51,7 @@ const LoadHistory = async (player : Player, setLoading : (loading : boolean) => 
             nameTwo : "Nom2",
             status : history[0].status, // revenir ici pour mettre la bonne valeur.
             createdAt : history[0].createdAt,
+            idGame : history[0].id
         };
         if (history[0].status == "pending"){
             listOfHistoryBloc.listOfPendingGames.push(newObject);

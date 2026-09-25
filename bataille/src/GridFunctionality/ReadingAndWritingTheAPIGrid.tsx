@@ -1,6 +1,7 @@
 import {type GameData, type Player, type PlayerHeaders} from "../context/PlayerContext";
 import {BuildTheBoard, CleanGrid} from "./CreationOfTheGrid";
 import type {TheGameGrids} from "../GameGrid";
+import type {HistoryBloc} from "../pages/History/History";
 
 export const request = async (path: string, options: RequestInit = {})   => {
   const apiUrl = 'http://localhost:8000';
@@ -195,7 +196,7 @@ export const ConnexionALaPartie = async (identifiantPartie: number | undefined, 
                         method: 'POST',
                         headers: { ...player.playerHeaders },
                         body: JSON.stringify({
-                            state: serializedBoard,
+                            state: activeGame.state || serializedBoard,
                             currentTurnUserId: player.userId,
                         }),
                     });
@@ -271,4 +272,38 @@ export const ConnexionALaPartie = async (identifiantPartie: number | undefined, 
         console.error("Connexion à la partie impossible :", error);
         return player;
     }
+}
+
+export const ListOfAccessibleSections = async (player : Player) : Promise<HistoryBloc[]> => {
+    const listOfGame : HistoryBloc[] = [];
+    
+    try {
+        const myGamesResponse = await request('/games/mine', {
+            method: 'GET',
+            headers: { ...player.playerHeaders },
+        });
+
+        if (myGamesResponse.ok) {
+            const games : GameData[] = await myGamesResponse.json() as GameData[];
+
+            for (let i = 0; i < games.length; i++) {
+                const newObject : HistoryBloc = {
+                    nameOne : games[i].creatorId.toString(),
+                    nameTwo : "Nom2",
+                    status : games[i].status,
+                    createdAt : games[i].createdAt,
+                    idGame : games[i].id
+                };
+                
+                listOfGame.push(newObject);
+            }
+        } else {
+            throw new Error("Erreur lors de l'envoie des requêtes à l'API.");
+        }
+    } catch (error) {
+        console.error(error);
+        throw new Error("Erreur lors de la récupération des parties du joueur.");
+    }
+
+    return listOfGame;
 }

@@ -1,7 +1,8 @@
 import './GameGrid.css'
 import React, {useContext, useEffect, useState} from 'react';
-import {ConnexionALaPartie, EndedGame, ItIsPlayerOneTurn, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
+import {ConnexionALaPartie, EndedGame, ItIsPlayerOneTurn, ListOfAccessibleSections, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
 import {PlayerContext, type Player} from './context/PlayerContext';
+import type {HistoryBloc} from './pages/History/History';
 
 export const numberOfBoat : number = 9;
 
@@ -182,6 +183,7 @@ function GameGridPlay({itIsOurTurn} : GameGridPlayProps) {
 function GameGrid() {
     const { player, setPlayer } = useContext(PlayerContext);
     const [itIsOurTurn, setItIsOurTurn] = useState<number>(-1);
+    const [listOfGame, setListOfGame] = useState<HistoryBloc[]>([]);
 
     useEffect(() => {
         let isActive = true;
@@ -214,19 +216,45 @@ function GameGrid() {
         };
     }, [player]);
 
+    useEffect(() => {
+        let isActive = true;
+
+        if (player != null){
+            const FindGame = async () => {
+                try {
+                    const newListOfGame : HistoryBloc[] = await ListOfAccessibleSections(player)
+                    if (isActive){
+                        setListOfGame(newListOfGame);
+                    }
+                } catch (error) {
+                    if (isActive) {
+                        console.error("Erreur lors de la récupération des parties", error);
+                    }
+                }
+            }
+            FindGame();
+        }
+        return () => {
+            isActive = false;
+        };
+    }, [player]);
+
+
     return (
         <>
             {!getGameGrids(player) ? 
                 <>
                     <p>Vous n'avez pas encore lancé une partie.</p>
-                    <button onClick={async () => {
-                        try {
-                            const result = await ConnexionALaPartie(undefined, player);
-                            setPlayer(result);
-                        } catch (error) {
-                            console.error('Échec du chargement des données du joueur :', error);
-                        }
-                    }}>Lancer la partie de test</button>
+                    {listOfGame.map((e) => (
+                        <button key={e.idGame} onClick={async () => {
+                            try {
+                                const result = await ConnexionALaPartie(e.idGame, player);
+                                setPlayer(result);
+                            } catch (error) {
+                                console.error('Échec du chargement des données du joueur :', error);
+                            }
+                        }}>Lancer la partie {e.idGame} !</button>
+                    ))}
                 </> : 
                 <>
                     {itIsOurTurn == -1 ? <p>Chargement en cours...</p> :
