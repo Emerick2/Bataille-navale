@@ -18,10 +18,10 @@ export interface GameData{
     currentTurnUserId: number;
     isYourTurn: boolean;
     state: string;
-    endData: Object;
+    endData: string | null;
     createdAt: string;
-    startedAt: Object;
-    endedAt: Object;
+    startedAt: string | null;
+    endedAt: string | null;
     playerOneVictory: boolean;
     token : string;
 }
@@ -31,7 +31,7 @@ export interface PlayerHeaders{
 }
 
 export interface Player{
-    player : GameData;
+    player : GameData | null;
     playerHeaders : PlayerHeaders;
     userId: number;
 }

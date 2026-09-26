@@ -1,5 +1,5 @@
 const NotFound = () => {
-    return <h1>(page NotFound) c'est pour les erreur 404</h1>
+    return <h1>Vous avez coullé ! Vous être sur une page d'erreur 404 !</h1>
 }
 
 export default NotFound

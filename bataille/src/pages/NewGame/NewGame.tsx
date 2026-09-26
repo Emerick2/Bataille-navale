@@ -1,13 +1,14 @@
 import { useContext, useState } from 'react'
-import { PlayerContext } from '../../context/PlayerContext'
+import { PlayerContext, type Player } from '../../context/PlayerContext'
 import stylesNewGame from './NewGame.module.css'
 import { useNavigate } from 'react-router'
+import {ConnexionALaPartie} from '../../GridFunctionality/ReadingAndWritingTheAPIGrid'
 
 const NewGame = () => {
     const [opponentEmail, setOpponentEmail] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
-    const { player } = useContext(PlayerContext)
+    const { player, setPlayer } = useContext(PlayerContext)
     const navigate = useNavigate()
 
     if (!player) {
@@ -20,95 +21,30 @@ const NewGame = () => {
         )
     }
 
-    const createGame = async () => {
-        const response = await fetch('http://localhost:8000/games', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: player.playerHeaders.Authorization,
-            },
-            body: JSON.stringify({
-                minPlayers: 1,
-                maxPlayers: 2,
-            }),
-        })
-
-        const data = await response.json()
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Impossible de créer la partie.')
-        }
-
-        return data
-    }
-
-    const inviteOpponent = async (gameId: number) => {
-        const response = await fetch(`http://localhost:8000/games/${gameId}/invite`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: player.playerHeaders.Authorization,
-            },
-            body: JSON.stringify({
-                email: opponentEmail,
-            }),
-        })
-
-        const data = await response.json()
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Impossible d’inviter cet adversaire.')
-        }
-
-        return data
-    }
-
-    const startGame = async (gameId: number) => {
-        const response = await fetch(`http://localhost:8000/games/${gameId}/start`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: player.playerHeaders.Authorization,
-            },
-            body: JSON.stringify({
-                state: '',
-            }),
-        })
-
-        const data = await response.json()
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Impossible de démarrer la partie.')
-        }
-
-        return data
-    }
-
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        setErrorMessage('')
-        setIsSubmitting(true)
+        if (opponentEmail.length >= 3){
+            event.preventDefault()
+            setErrorMessage('')
+            setIsSubmitting(true)
 
-        try {
-            const createdGame = await createGame()
-            const gameId = createdGame.id
+            try {
+                const newPlayer : Player | null = await ConnexionALaPartie(undefined, player, opponentEmail);
 
-            console.log('ID de la partie :', gameId)
-
-            const gameWithOpponent = await inviteOpponent(gameId)
-            console.log('Partie après invitation :', gameWithOpponent)
-
-            const startedGame = await startGame(gameId)
-            console.log('Partie démarrée :', startedGame)
-            navigate(`/parties/${startedGame.id}`, { replace: true })
-        } catch (error) {
-            if (error instanceof Error) {
-                setErrorMessage(error.message)
-            } else {
-                setErrorMessage('Une erreur inconnue est survenue.')
+                if (newPlayer != null) {
+                    setPlayer(newPlayer);
+                    navigate("/parties");
+                } else {
+                    setErrorMessage("Impossible de lancer ou rejoindre la partie.");
+                }
+            } catch (error) {
+                if (error instanceof Error) {
+                    setErrorMessage(error.message);
+                } else {
+                    setErrorMessage("Une erreur est survenue.");
+                }
+            } finally {
+                setIsSubmitting(false);
             }
-        } finally {
-            setIsSubmitting(false)
         }
     }
 

@@ -59,3 +59,26 @@
     height: 100%;
     background-color: rgb(137, 152, 255);
 }
+
+.endGamePanel{
+    text-align: 'center';
+    padding: '2rem';
+}
+
+.textVictory{
+    color: 'green';
+    font-size: '1.5rem';
+    font-weight: 'bold';
+}
+
+.textGameOver{
+    color: 'red';
+    font-size: '1.5rem';
+    font-weight: 'bold';
+}
+
+.textEndGameButton{
+    padding: '10px 20px';
+    font-size: '1rem';
+    cursor: 'pointer';
+}

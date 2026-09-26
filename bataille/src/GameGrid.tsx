@@ -1,8 +1,9 @@
 import './GameGrid.css'
 import React, {useContext, useEffect, useState} from 'react';
-import {ConnexionALaPartie, EndedGame, ItIsPlayerOneTurn, ListOfAccessibleSections, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
+import {ConnexionALaPartie, EndedGame, ItIsPlayerOneTurn, ListOfAccessibleSections, request, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
 import {PlayerContext, type Player} from './context/PlayerContext';
 import type {HistoryBloc} from './pages/History/History';
+import {useNavigate} from 'react-router';
 
 export const numberOfBoat : number = 9;
 
@@ -111,22 +112,30 @@ function GameGridPlay({itIsOurTurn} : GameGridPlayProps) {
                                     } else {
                                         gameGridPlay[y][x] = 2; // 2 : on touche
                                         console.log("TOUCHÉ !");
-    
-                                        let numberOfSunkenBoat = 0;
-                                        for (let i = 0; i < gameGridPlay.length; i++) {
-                                            for (let j = 0; j < gameGridPlay[i].length; j++) {
-                                                if (gameGridPlay[i][j] == 2){
-                                                    numberOfSunkenBoat++;
-                                                    if (numberOfSunkenBoat >= numberOfBoat){
-                                                        // ↓ -------------------------↓ !! ↓------------------------- ↓
-                                                        console.log("Le joueur à gagner !");
-                                                        EndedGame(
-                                                            player.player.id,
-                                                            thisIsPlayerOne,
-                                                            player.playerHeaders,
-                                                        )
-                                                        // ↑ -------------------------↑ !! ↑------------------------- ↑
-                                                    }
+                                    }
+                                    let numberOfSunkenBoat = 0;
+                                    for (let i = 0; i < gameGridPlay.length; i++) {
+                                        for (let j = 0; j < gameGridPlay[i].length; j++) {
+                                            if (gameGridPlay[i][j] == 2){
+                                                numberOfSunkenBoat++;
+                                                if (numberOfSunkenBoat >= numberOfBoat){
+                                                    console.log("Le joueur à gagner !");
+                                                    (async () => {
+                                                        if (player.player != null) {
+                                                            const updatedGame = await EndedGame(
+                                                                player.player.id,
+                                                                thisIsPlayerOne,
+                                                                player.playerHeaders,
+                                                            )
+                                                            if (updatedGame) {
+                                                                setPlayer({
+                                                                    ...player,
+                                                                    player: updatedGame,
+                                                                });
+                                                            }
+                                                        }
+                                                    })();
+                                                    return;
                                                 }
                                             }                                        
                                         }
@@ -184,6 +193,7 @@ function GameGrid() {
     const { player, setPlayer } = useContext(PlayerContext);
     const [itIsOurTurn, setItIsOurTurn] = useState<number>(-1);
     const [listOfGame, setListOfGame] = useState<HistoryBloc[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         let isActive = true;
@@ -239,6 +249,50 @@ function GameGrid() {
         };
     }, [player]);
 
+    if (player && player.player && player.player.status === 'ended') {
+        let hasWin = false;
+        if (player.player.endData) {
+            try {
+                const endDataParsed = JSON.parse(player.player.endData);
+                const isPlayerOne = TheCurrentPlayerIsPlayerOne(player);
+                hasWin = (isPlayerOne && endDataParsed.playerOneVictory) || (!isPlayerOne && !endDataParsed.playerOneVictory);
+            } catch (e) {
+                console.error("Erreur de lecture de endData", e);
+            }
+        }
+
+        const ReturnHome = async () => {
+            try {
+                await request(`/games/${player.player!.id}/seen`, {
+                    method: 'POST',
+                    headers: { ...player.playerHeaders },
+                });
+
+                setPlayer({
+                    ...player,
+                    player: null,
+                });
+            } catch (error) {
+                console.error("Erreur lors du marquage de la partie comme vue :", error);
+            }
+
+            navigate("/");
+        };
+        return (
+            <div className="endGamePanel">
+                <h2>Partie Terminée</h2>
+                {hasWin ? (
+                    <p className='textVictory'>Victoire ! Vous avez coulé tous les navires adverses.</p>
+                ) : (
+                    <p className='textGameOver'>Défaite... Vos navires ont été submergés.</p>
+                )}
+                <br />
+                <button onClick={ReturnHome} className='textEndGameButton'>
+                    Retourner au menu d'accueil
+                </button>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -248,7 +302,7 @@ function GameGrid() {
                     {listOfGame.map((e) => (
                         <button key={e.idGame} onClick={async () => {
                             try {
-                                const result = await ConnexionALaPartie(e.idGame, player);
+                                const result = await ConnexionALaPartie(e.idGame, player, "");
                                 setPlayer(result);
                             } catch (error) {
                                 console.error('Échec du chargement des données du joueur :', error);

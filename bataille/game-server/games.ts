@@ -124,9 +124,14 @@ export async function inviteToGame(req: Request, gameId: number): Promise<Respon
   }
 
   const body = await readJsonBody(req);
-  const email = requireString(body, "email");
+  const email = requireString(body, "email").trim().toLowerCase();
   const invited = findUserByEmail(email);
-  if (!invited) throw new HttpError(404, "No user with this email exists");
+  if (!invited) {
+    db.prepare(
+      "INSERT OR IGNORE INTO game_invitations (game_id, email) VALUES (?, ?)",
+    ).run(gameId, email);
+    return json(toGamePayload(getGameRow(gameId), user.id));
+  }
   if (isPlayer(gameId, invited.id)) {
     throw new HttpError(409, "This player is already in the game");
   }

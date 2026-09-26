@@ -114,7 +114,7 @@ export const ItIsPlayerOneTurn = async (player: Player, gameId: number, playerHe
     }
 }
 
-export const EndedGame = async (gameId : number, thePlayerOneVictory : boolean, playerHeaders : PlayerHeaders) => {
+export const EndedGame = async (gameId : number, thePlayerOneVictory : boolean, playerHeaders : PlayerHeaders) : Promise<GameData | null> => {
     try {
         const gameResponse = await request(`/games/${gameId}`, {
             method: 'GET',
@@ -143,135 +143,141 @@ export const EndedGame = async (gameId : number, thePlayerOneVictory : boolean, 
         if (!response.ok) {
             throw new Error(`Impossible de finir la partie : ${response.status}`);
         }
+
+        const updatedGame : GameData = await response.json() as GameData;
+        return updatedGame;
     } catch (error) {
         console.error(error);
+        return null;
     }
 }
 
 
-export const ConnexionALaPartie = async (identifiantPartie: number | undefined, player: Player | null): Promise<Player | null> => {
+export const ConnexionALaPartie = async (identifiantPartie: number | undefined, player: Player | null, mailInvitee: string = ""): Promise<Player | null> => {
     if (player == null) {
         return null;
     }
     console.log("Début connexion");
 
-    const board: TheGameGrids = {
-        GameGridPlayer1: BuildTheBoard(),
-        GameGridPlayer2: BuildTheBoard(),
-        PlayGameGridPlayer1: CleanGrid(),
-        PlayGameGridPlayer2: CleanGrid(),
-    };
-    const serializedBoard = JSON.stringify(board);
-
     try {
-        if (identifiantPartie !== undefined) {
-            const existingGameResponse = await ReadPartOfTheGame(identifiantPartie, player.playerHeaders);
-            if (existingGameResponse && existingGameResponse.ok) {
-                const existingGame = await existingGameResponse.json() as GameData;
-                console.log("Partie existante rejointe avec succès !");
-                return { ...player, player: existingGame };
+        if (mailInvitee && mailInvitee !== "") {
+            const myGamesResponse = await request('/games/mine', {
+                method: 'GET',
+                headers: { ...player.playerHeaders },
+            });
+
+            let existingGameWithMail: GameData | undefined = undefined;
+            if (myGamesResponse.ok) {
+                const myGames: GameData[] = await myGamesResponse.json() as GameData[];
+                existingGameWithMail = myGames.find(g => 
+                    g.players && g.players.some(p => p.email === mailInvitee)
+                );
             }
-        }
 
-        // Vérification des parties en cours
-        const myGamesResponse = await request('/games/mine', {
-            method: 'GET',
-            headers: { ...player.playerHeaders },
-        });
-
-        if (myGamesResponse.ok) {
-            const myGames : GameData[] = await myGamesResponse.json() as GameData[];
-                const activeGame : GameData | undefined =
-                    myGames.find(g => g.status === 'started') ??
-                    myGames.find(g => g.status === 'pending');
-            if (activeGame) {
-                console.log(`Récupération de la partie existante en cours : ${activeGame.id}`);
-                const canStartActiveGame =
-                    activeGame.status === 'pending' &&
-                    activeGame.creatorId === player.userId &&
-                    activeGame.players.length >= activeGame.minPlayers;
-
-                if (canStartActiveGame) {
-                    const startResponse = await request(`/games/${activeGame.id}/start`, {
-                        method: 'POST',
-                        headers: { ...player.playerHeaders },
-                        body: JSON.stringify({
-                            state: activeGame.state || serializedBoard,
-                            currentTurnUserId: player.userId,
-                        }),
-                    });
-                    if (!startResponse.ok) {
-                        const latestGameResponse = await ReadPartOfTheGame(activeGame.id, player.playerHeaders);
-                        const latestGame = latestGameResponse?.ok
-                            ? await latestGameResponse.json() as GameData
-                            : null;
-
-                        if (latestGame?.status !== 'started') {
-                            const errorBody = await startResponse.text();
-                            throw new Error(
-                                `Impossible de démarrer la partie : ${startResponse.status} ${errorBody}`,
-                            );
-                        }
-                    }
-                }
-                const finalGameResponse: Response | null = await ReadPartOfTheGame(activeGame.id, player.playerHeaders);
+            if (existingGameWithMail) {
+                console.log(`Partie existante trouvée avec ${mailInvitee} (ID: ${existingGameWithMail.id})`);
+                const finalGameResponse = await ReadPartOfTheGame(existingGameWithMail.id, player.playerHeaders);
                 if (finalGameResponse && finalGameResponse.ok) {
                     return {
                         ...player,
                         player: await finalGameResponse.json() as GameData,
                     };
                 }
+            } else {
+                console.log(`Création d'une nouvelle partie contre ${mailInvitee}`);
+                
+                const board: TheGameGrids = {
+                    GameGridPlayer1: BuildTheBoard(),
+                    GameGridPlayer2: BuildTheBoard(),
+                    PlayGameGridPlayer1: CleanGrid(),
+                    PlayGameGridPlayer2: CleanGrid(),
+                };
+                const serializedBoard = JSON.stringify(board);
+
+                const createResponse = await request('/games', {
+                    method: 'POST',
+                    headers: { ...player.playerHeaders },
+                    body: JSON.stringify({ minPlayers: 1, maxPlayers: 2 }),
+                });
+                if (!createResponse.ok) {
+                    throw new Error(`Impossible de créer la partie : ${createResponse.status}`);
+                }
+                const createdGame = await createResponse.json() as GameData;
+                const gameId = createdGame.id;
+
+                const inviteResponse = await request(`/games/${gameId}/invite`, {
+                    method: 'POST',
+                    headers: { ...player.playerHeaders },
+                    body: JSON.stringify({ email: mailInvitee }),
+                });
+                
+                if (!inviteResponse.ok) {
+                    let errorMessage = `statut HTTP ${inviteResponse.status}`;
+                    try {
+                        const errorBody = await inviteResponse.json() as { error?: unknown };
+                        if (typeof errorBody.error === 'string' && errorBody.error.length > 0) {
+                            errorMessage = errorBody.error;
+                        }
+                    } catch {
+                        // Keep the HTTP status when the server does not return JSON.
+                    }
+                    throw new Error(`Impossible d'inviter le joueur : ${errorMessage}`);
+                }
+
+                const startResponse = await request(`/games/${gameId}/start`, {
+                    method: 'POST',
+                    headers: { ...player.playerHeaders },
+                    body: JSON.stringify({
+                        state: serializedBoard,
+                        currentTurnUserId: player.userId,
+                    }),
+                });
+                
+                if (!startResponse.ok && startResponse.status !== 400) {
+                    throw new Error(`Impossible de démarrer la partie : ${startResponse.status}`);
+                }
+
+                const finalGameResponse = await ReadPartOfTheGame(gameId, player.playerHeaders);
+                if (finalGameResponse == null || !finalGameResponse.ok) {
+                    throw new Error(`Impossible de lire la partie créée.`);
+                }
+
+                return {
+                    ...player,
+                    player: await finalGameResponse.json() as GameData,
+                };
             }
+        } 
+
+        else if (identifiantPartie !== undefined) {
+            console.log(`Rejoindre la partie par ID : ${identifiantPartie}`);
+            const existingGameResponse = await ReadPartOfTheGame(identifiantPartie, player.playerHeaders);
+            if (existingGameResponse && existingGameResponse.ok) {
+                const existingGame = await existingGameResponse.json() as GameData;
+                
+                if (!existingGame.state || existingGame.state === "") {
+                    const board: TheGameGrids = {
+                        GameGridPlayer1: BuildTheBoard(),
+                        GameGridPlayer2: BuildTheBoard(),
+                        PlayGameGridPlayer1: CleanGrid(),
+                        PlayGameGridPlayer2: CleanGrid(),
+                    };
+                    existingGame.state = JSON.stringify(board);
+                }
+
+                return { ...player, player: existingGame };
+            }
+            throw new Error(`Impossible de trouver la partie avec l'ID ${identifiantPartie}`);
+        }
+        else {
+            throw new Error("Erreur : Aucun mail d'invité fourni et aucun identifiant de partie spécifié.");
         }
 
-        const createResponse = await request('/games', {
-            method: 'POST',
-            headers: { ...player.playerHeaders },
-            body: JSON.stringify({ minPlayers: 1, maxPlayers: 2 }),
-        });
-        if (!createResponse.ok) {
-            throw new Error(`Impossible de créer la partie : ${createResponse.status}`);
-        }
-        const createdGame = await createResponse.json() as GameData;
-        const gameId = createdGame.id;
-
-        const mailInvitee = "a@a";
-        const inviteResponse = await request(`/games/${gameId}/invite`, {
-            method: 'POST',
-            headers: { ...player.playerHeaders },
-            body: JSON.stringify({ email: mailInvitee }),
-        });
-        
-        if (!inviteResponse.ok && inviteResponse.status !== 409) {
-            throw new Error(`Impossible d'inviter le joueur : ${inviteResponse.status}`);
-        }
-
-        const startResponse = await request(`/games/${gameId}/start`, {
-            method: 'POST',
-            headers: { ...player.playerHeaders },
-            body: JSON.stringify({
-                state: serializedBoard,
-                currentTurnUserId: player.userId,
-            }),
-        });
-        
-        if (!startResponse.ok && startResponse.status !== 400) {
-            throw new Error(`Impossible de démarrer la partie : ${startResponse.status}`);
-        }
-
-        const finalGameResponse = await ReadPartOfTheGame(gameId, player.playerHeaders);
-        if (finalGameResponse == null || !finalGameResponse.ok) {
-            throw new Error(`Impossible de lire la partie créée : ${finalGameResponse?.status ?? 'réseau indisponible'}`);
-        }
-
-        return {
-            ...player,
-            player: await finalGameResponse.json() as GameData,
-        };
     } catch (error) {
         console.error("Connexion à la partie impossible :", error);
-        return player;
+        throw error;
     }
+    return null;
 }
 
 export const ListOfAccessibleSections = async (player : Player) : Promise<HistoryBloc[]> => {
