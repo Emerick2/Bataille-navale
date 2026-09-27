@@ -1,0 +1,39 @@
+.vide {
+  margin-top: 34px;
+  padding: 56px 40px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px dashed var(--border-vif);
+  border-radius: 22px;
+}
+
+.ico {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: .22em;
+  word-spacing: .6em;
+  color: var(--sonar);
+}
+
+.titre { margin-top: 16px; font-size: 30px; font-weight: 700; }
+
+.texte {
+  margin: 12px auto 0;
+  max-width: 460px;
+  color: var(--muted);
+}
+
+.actions { display: flex; gap: 12px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
+
+.btnPrincipal,
+.btnFantome {
+  display: inline-block;
+  padding: 13px 22px;
+  border-radius: 12px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.btnPrincipal { background: var(--sonar); color: #04211F; }
+.btnFantome { border-color: var(--border-vif); color: var(--texte); }
+.btnFantome:hover { border-color: var(--sonar); color: var(--sonar); }

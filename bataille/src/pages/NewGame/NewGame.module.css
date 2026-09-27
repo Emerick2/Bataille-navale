@@ -1,0 +1,129 @@
+.page {
+    width: min(100%, 640px);
+    margin: 0 auto;
+    padding: 48px 24px;
+}
+
+.eyebrow {
+    color: var(--sonar);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.titre {
+    margin-top: 8px;
+    font-family: var(--police-titre);
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.card {
+    margin-top: 32px;
+    padding: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--rayon);
+    box-shadow: 0 20px 50px rgb(0 0 0 / 0.25);
+}
+
+.form {
+    display: grid;
+    gap: 10px;
+}
+
+.input {
+    width: 100%;
+    padding: 13px 14px;
+    background: var(--abysse);
+    border: 1px solid var(--border-vif);
+    border-radius: 8px;
+    color: var(--texte);
+    font: inherit;
+    outline: none;
+}
+
+.input:focus {
+    border-color: var(--sonar);
+    box-shadow: 0 0 0 3px rgb(55 201 192 / 0.14);
+}
+
+.button {
+    margin-top: 8px;
+    padding: 13px 18px;
+    background: var(--sonar);
+    border: 1px solid var(--sonar);
+    border-radius: 8px;
+    color: var(--abysse);
+    font: inherit;
+    font-weight: 700;
+    transition: transform 160ms ease, background 160ms ease;
+}
+
+.button:hover {
+    background: #62ddd6;
+    transform: translateY(-2px);
+}
+
+
+.loadingCard {
+    width: min(100%, 640px);
+    margin: 48px auto 0;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--rayon);
+    box-shadow: 0 20px 50px rgb(0 0 0 / 0.25);
+}
+
+.loadingEyebrow {
+    color: var(--sonar);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.loadingText {
+    margin-top: 10px;
+    color: var(--texte);
+    font-size: 1rem;
+}
+
+.loadingBar {
+    height: 10px;
+    margin-top: 18px;
+    border-radius: 999px;
+    background: linear-gradient(
+        90deg,
+        rgb(55 201 192 / 0.18) 0%,
+        rgb(55 201 192 / 0.5) 50%,
+        rgb(55 201 192 / 0.18) 100%
+    );
+    background-size: 200% 100%;
+    animation: loadingSweep 1.4s linear infinite;
+}
+
+@keyframes loadingSweep {
+    from {
+        background-position: 200% 0;
+    }
+    to {
+        background-position: -200% 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loadingBar {
+        animation: none;
+    }
+}
+
+.errorMessage {
+    color: #ff8f8f;
+    margin-top: 4px;
+}

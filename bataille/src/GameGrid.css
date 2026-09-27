@@ -1,0 +1,76 @@
+.espaceVide{
+    border: solid 0px;
+    width: 100px;
+}
+
+.lineCase{
+    display: flex;
+    flex-direction: row;
+}
+
+.caseGameGride{
+    transition: 0.2s;
+    border: solid 1px;
+    width: 30px;
+    height: 30px;
+}
+
+.caseGameGrideSelected{
+    cursor: pointer;
+}
+
+.caseGameGrideSelected:hover{
+    transition: 0.2s;
+    background-color: gainsboro;
+}
+
+.caseGameGrideSelected:active{
+    transition: 0.2s;
+    background-color: rgb(190, 189, 189);
+}
+
+.notToBeSelected, .notToBeSelected:hover, .notToBeSelected:active{
+    transition: 0.2s;
+    background-color: white;
+    cursor:auto;
+}
+
+.boat{
+    background-color: coral;
+}
+
+.colorSunk{
+    width: 100%;
+    height: 100%;
+    background-color: rgb(218, 188, 177);
+    border-radius: 50%;
+}
+
+.colorHit{
+    width: 100%;
+    height: 100%;
+    background-color: rgb(137, 152, 255);
+}
+
+.endGamePanel{
+    text-align: 'center';
+    padding: '2rem';
+}
+
+.textVictory{
+    color: 'green';
+    font-size: '1.5rem';
+    font-weight: 'bold';
+}
+
+.textGameOver{
+    color: 'red';
+    font-size: '1.5rem';
+    font-weight: 'bold';
+}
+
+.textEndGameButton{
+    padding: '10px 20px';
+    font-size: '1rem';
+    cursor: 'pointer';
+}

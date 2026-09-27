@@ -1,0 +1,81 @@
+.carte {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--rayon);
+  transition: border-color .18s ease, transform .18s ease;
+}
+
+.carte:hover { transform: translateY(-2px); }
+
+.jouable {
+  border-color: var(--signal-sombre);
+  background: linear-gradient(120deg, rgba(255, 184, 77, .06), var(--surface) 55%);
+}
+.jouable:hover { border-color: var(--signal); }
+
+.calme { opacity: .82; }
+.calme:hover { opacity: 1; }
+
+.corps { min-width: 0; }
+
+.statut {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.statutMoi { color: var(--signal); }
+.statutEux { color: var(--faint); }
+
+.nom { font-size: 16.5px; font-weight: 700; }
+
+.meta {
+  margin-top: 5px;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.droite {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 9px;
+}
+
+.chrono {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--faint);
+  white-space: nowrap;
+}
+.chronoUrgent { color: var(--signal); }
+
+.btn {
+  display: inline-block;
+  padding: 9px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.btnSignal { background: var(--signal); color: #2A1B02; }
+.btnSignal:hover { filter: brightness(1.08); }
+
+.btnFantome { border-color: var(--border-vif); color: var(--texte); }
+.btnFantome:hover { border-color: var(--sonar); color: var(--sonar); }
+
+@media (max-width: 640px) {
+  .carte { grid-template-columns: auto 1fr; }
+  .droite { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; align-items: center; }
+}

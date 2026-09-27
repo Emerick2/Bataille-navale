@@ -1,0 +1,26 @@
+.radar {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  width: 104px;
+  padding: 5px;
+  background: #080F17;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.cellule {
+  aspect-ratio: 1;
+  border-radius: 1px;
+}
+
+.inconnu { background: #132635; }
+.rate    { background: #2E5566; }
+.touche  { background: var(--touche); }
+.coule   { background: var(--coule); }
+
+.dernier {
+  outline: 1.5px solid var(--signal);
+  outline-offset: 1px;
+}
