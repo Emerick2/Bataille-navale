@@ -61,6 +61,11 @@ export async function signup(req: Request): Promise<Response> {
     .run(email, passwordHash, salt, profilePicture);
 
   const user: AuthUser = { id: Number(result.lastInsertRowid), email, profilePicture };
+  db.prepare(
+    `INSERT OR IGNORE INTO game_players (game_id, user_id)
+     SELECT game_id, ? FROM game_invitations WHERE email = ?`,
+  ).run(user.id, email);
+  db.prepare("DELETE FROM game_invitations WHERE email = ?").run(email);
   const token = createSession(user.id);
 
   return json({ token, user }, 201);

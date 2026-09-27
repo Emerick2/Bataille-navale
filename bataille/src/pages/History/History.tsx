@@ -1,27 +1,14 @@
-import {useContext, useEffect, useState} from 'react';
+import {useContext, useState} from 'react';
 import {GameInProgressPlayer, HistoryPlayer} from '../../GridFunctionality/DataPlayerAPI';
 import './History.css'
 import {PlayerContext, type GameData, type Player} from '../../context/PlayerContext';
 
-/*
-Consigne :
-Consulter la liste des dernières parties et de leurs résultats
-sur une page d'historique spécifique à chaque joueur.
-
-- état de la partie : invitation envoyer / invitation reçus / en cours / terminé
-- date de début de la partie : "2026-09-14 12:00:00"
-- Nom du joueur qui à créé la partie
-- Nom du joueur qui à été invitée
-- Si le joueur à gagner la partie
-
-- pourcentage de partie gagner
-- nombre de partie gagner / nombre partie jouer
-*/
-interface HistoryBloc{
+export interface HistoryBloc{
     nameOne : string;
     nameTwo : string;
     status : string;
     createdAt : string;
+    idGame : number;
 }
 
 interface ListOfHistoryBloc{
@@ -42,25 +29,66 @@ const LoadHistory = async (player : Player, setLoading : (loading : boolean) => 
         history.push(gameInProgress[i]);
     }
 
+    let winsCount = 0;
+    let completedCount = 0;
+
     for (let i = 0; i < history.length; i++) {
-        // console.log(history[0].createdAt);
-        const newObject : HistoryBloc = {
-            nameOne : history[0].creatorId.toString(),
-            // nameTwo : history[0].players.id.toString(),
-            nameTwo : "Nom2",
-            status : history[0].status, // revenir ici pour mettre la bonne valeur.
-            createdAt : history[0].createdAt,
+        const game = history[i];
+        const creator = game.players.find((player) => player.id === game.creatorId);
+        const opponent = game.players.find((player) => player.id !== game.creatorId);
+
+        let textStatus : string = game.status;
+        if (game.status === "ended") {
+            listOfHistoryBloc.totalGames++;
+            completedCount++;
+
+            let hasWin = false;
+            if (game.endData) {
+                try {
+                    const endDataParsed = JSON.parse(game.endData);
+                    const isPlayerOne = game.creatorId === player.userId;
+                    hasWin = (isPlayerOne && endDataParsed.playerOneVictory) || (!isPlayerOne && !endDataParsed.playerOneVictory);
+                } catch (e) {
+                    console.error("Erreur de lecture de endData", e);
+                }
+            }
+
+            if (hasWin) {
+                winsCount++;
+                textStatus = "Gagnée";
+            } else {
+                textStatus = "Perdue";
+            }
+        } else {
+            if (game.status === "pending") {
+                textStatus = "En attente";
+            } else if (game.status === "started") {
+                textStatus = "En cours";
+            }
+            listOfHistoryBloc.totalGames++;
+        }
+
+        const newObject: HistoryBloc = {
+            nameOne: creator?.email ?? "Joueur inconnu",
+            nameTwo: opponent?.email ?? "En attente d'un joueur",
+            status: textStatus,
+            createdAt: game.createdAt,
+            idGame: game.id
         };
-        if (history[0].status == "pending"){
+        if (game.status === "pending"){
             listOfHistoryBloc.listOfPendingGames.push(newObject);
-        } else if (history[0].status == "started"){
+        } else if (game.status === "started"){
             listOfHistoryBloc.listOfOngoingGames.push(newObject);
         } else {
             listOfHistoryBloc.listOfCompletedGames.push(newObject);
         }
         
         listOfHistoryBloc.totalGames++;
-        // newObject.status = ""
+    }
+
+    listOfHistoryBloc.gamesWin = winsCount;
+    if (completedCount > 0) {
+        listOfHistoryBloc.winPercentage = Math.round((winsCount / completedCount) * 100);
     }
 
     setListOfHistoryBloc(listOfHistoryBloc);

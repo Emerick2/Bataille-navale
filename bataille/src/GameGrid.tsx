@@ -1,7 +1,10 @@
 import './GameGrid.css'
+import "./pages/History/History.css"
 import React, {useContext, useEffect, useState} from 'react';
-import {EndedGame, ItIsPlayerOneTurn, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
-import {PlayerContext} from './context/PlayerContext';
+import {ConnexionALaPartie, EndedGame, ItIsPlayerOneTurn, ListOfAccessibleSections, request, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
+import {PlayerContext, type Player} from './context/PlayerContext';
+import type {HistoryBloc} from './pages/History/History';
+import {useNavigate} from 'react-router';
 
 export const numberOfBoat : number = 9;
 
@@ -12,12 +15,37 @@ export interface TheGameGrids{
     PlayGameGridPlayer2 : number[][]; // La grille avec les tentatives J2
 }
 
+interface GameGridPlayProps {
+    itIsOurTurn: boolean;
+}
+
 export const height : number = 10;
+
+function getGameGrids(player: Player | null): TheGameGrids | null {
+    if (!player || !player.player || typeof player.player.id !== 'number' || typeof player.player.state !== 'string' || player.player.state.length === 0) {
+        return null;
+    }
+
+    if (typeof player.player.state !== 'string' || player.player.state.length === 0) {
+        return null;
+    }
+    
+    try {
+        const gameGrids = JSON.parse(player.player.state) as TheGameGrids;
+        if (!Array.isArray(gameGrids.GameGridPlayer1) || !Array.isArray(gameGrids.GameGridPlayer2) ||
+            !Array.isArray(gameGrids.PlayGameGridPlayer1) || !Array.isArray(gameGrids.PlayGameGridPlayer2)) {
+            return null;
+        }
+        return gameGrids;
+    } catch {
+        return null;
+    }
+}
 
 function MyGameGrid() {
     const { player } = useContext(PlayerContext);
-    if (player != null){
-        const theGameGrids : TheGameGrids = JSON.parse(player.player.state);
+    const theGameGrids = getGameGrids(player);
+    if (theGameGrids && player){
         let gridBoat : number[][] = theGameGrids.GameGridPlayer1;
         if (TheCurrentPlayerIsPlayerOne(player) == false){
             gridBoat = theGameGrids.GameGridPlayer2;
@@ -34,40 +62,22 @@ function MyGameGrid() {
                 </React.Fragment>
             ))
         );
-    } else {
-        return <p>Chargement en cours.</p>
     }
+    return <p>Chargement en cours.</p>;
 }
 
-function GameGridPlay() {
+function GameGridPlay({itIsOurTurn} : GameGridPlayProps) {
     const { player, setPlayer } = useContext(PlayerContext);
-    const [itIsOurTurn, setItIsOurTurn] = useState<boolean>(false);
-    
-    useEffect(() => {
-        if (!player) return;
-        let active = true;
-
-        const refreshTurn = async () => {
-            const isPlayerOneTurn = await ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders);
-
-            if (active) {
-                setItIsOurTurn(isPlayerOneTurn);
-            }
-        };
-
-        refreshTurn();
-
-        const timer = window.setInterval(refreshTurn, 5000);
-
-        return () => {
-            active = false;
-            window.clearInterval(timer);
-        };
-    }, [player]);
-
 
     if (player != null){
-        const theGameGrids : TheGameGrids = JSON.parse(player.player.state);
+        if (player.player == null){
+            console.log("Le joueur ne joue pas.");
+            return;
+        }
+        const theGameGrids = getGameGrids(player);
+        if (!theGameGrids){
+            return <p>Chargement en cours.</p>;
+        }
         let gameGridPlay : number[][] = theGameGrids.PlayGameGridPlayer1; // Si on est le joueur 1.
         let thisIsPlayerOne = true;
         if (TheCurrentPlayerIsPlayerOne(player) == false){
@@ -75,12 +85,20 @@ function GameGridPlay() {
             gameGridPlay = theGameGrids.PlayGameGridPlayer2; // Si on est le joueur 2.
         }
 
+        if (player.player == null){
+            console.log("Le joueur ne joue pas.");
+            return <p>Vous n'avez pas encore lancé une partie.</p>;
+        }
         return (
             gameGridPlay.map((column, colIndex) => (
                 <React.Fragment key={crypto.randomUUID()}>
                     <div className="lineCase">
-                        {column.map((line, lineIndex) => (
-                            <article key={crypto.randomUUID()} className={gameGridPlay[colIndex][lineIndex] == 0 ? "caseGameGride caseGameGrideSelected" : "caseGameGride"}  onClick={(e) => {
+                        {column.map((_line, lineIndex) => (
+                            <article key={crypto.randomUUID()} className={gameGridPlay[colIndex][lineIndex] == 0 ? "caseGameGride caseGameGrideSelected" : "caseGameGride"}  onClick={() => {
+                                if (player.player == null){
+                                    console.log("Le joueur ne joue pas.");
+                                    return;
+                                }
                                 if (!itIsOurTurn){
                                     return;
                                 }
@@ -95,22 +113,30 @@ function GameGridPlay() {
                                     } else {
                                         gameGridPlay[y][x] = 2; // 2 : on touche
                                         console.log("TOUCHÉ !");
-    
-                                        let numberOfSunkenBoat = 0;
-                                        for (let i = 0; i < gameGridPlay.length; i++) {
-                                            for (let j = 0; j < gameGridPlay[i].length; j++) {
-                                                if (gameGridPlay[i][j] == 2){
-                                                    numberOfSunkenBoat++;
-                                                    if (numberOfSunkenBoat >= numberOfBoat){
-                                                        // ↓ -------------------------↓ !! ↓------------------------- ↓
-                                                        console.log("Le joueur à gagner !");
-                                                        EndedGame(
-                                                            player.player.id,
-                                                            thisIsPlayerOne,
-                                                            player.playerHeaders,
-                                                        )
-                                                        // ↑ -------------------------↑ !! ↑------------------------- ↑
-                                                    }
+                                    }
+                                    let numberOfSunkenBoat = 0;
+                                    for (let i = 0; i < gameGridPlay.length; i++) {
+                                        for (let j = 0; j < gameGridPlay[i].length; j++) {
+                                            if (gameGridPlay[i][j] == 2){
+                                                numberOfSunkenBoat++;
+                                                if (numberOfSunkenBoat >= numberOfBoat){
+                                                    console.log("Le joueur à gagner !");
+                                                    (async () => {
+                                                        if (player.player != null) {
+                                                            const updatedGame = await EndedGame(
+                                                                player.player.id,
+                                                                thisIsPlayerOne,
+                                                                player.playerHeaders,
+                                                            )
+                                                            if (updatedGame) {
+                                                                setPlayer({
+                                                                    ...player,
+                                                                    player: updatedGame,
+                                                                });
+                                                            }
+                                                        }
+                                                    })();
+                                                    return;
                                                 }
                                             }                                        
                                         }
@@ -165,29 +191,144 @@ function GameGridPlay() {
 
 
 function GameGrid() {
-    const { player } = useContext(PlayerContext);
+    const { player, setPlayer } = useContext(PlayerContext);
     const [itIsOurTurn, setItIsOurTurn] = useState<number>(-1);
+    const [listOfGame, setListOfGame] = useState<HistoryBloc[]>([]);
+    const navigate = useNavigate();
 
-    if (player != null){
-        ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders)
-            .then((isPlayerOneTurn) => {
-                let valeur = 0;
-                if (isPlayerOneTurn == true){
-                    valeur = 1;
+    useEffect(() => {
+        let isActive = true;
+
+        if (!player || !getGameGrids(player)) {
+            setItIsOurTurn(-1);
+            return () => {
+                isActive = false;
+            };
+        }
+
+        const checkTurn = async () => {
+            if (player.player == null){
+                console.log("Le joueur ne joue pas.");
+                return;
+            }
+            const isPlayerOneTurn = await ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders);
+            if (isActive) {
+                setItIsOurTurn(isPlayerOneTurn ? 1 : 0);
+            }
+        };
+
+        checkTurn();
+
+        const timer = window.setInterval(checkTurn, 1500);
+
+        return () => {
+            isActive = false;
+            window.clearInterval(timer);
+        };
+    }, [player]);
+
+    useEffect(() => {
+        let isActive = true;
+
+        if (player != null){
+            const FindGame = async () => {
+                try {
+                    const newListOfGame : HistoryBloc[] = await ListOfAccessibleSections(player)
+                    if (isActive){
+                        setListOfGame(newListOfGame);
+                    }
+                } catch (error) {
+                    if (isActive) {
+                        console.error("Erreur lors de la récupération des parties", error);
+                    }
                 }
-                setItIsOurTurn(valeur)
-            });
+            }
+            FindGame();
+        }
+        return () => {
+            isActive = false;
+        };
+    }, [player]);
+
+    if (player && player.player && player.player.status === 'ended') {
+        let hasWin = false;
+        if (player.player.endData) {
+            try {
+                const endDataParsed = JSON.parse(player.player.endData);
+                const isPlayerOne = TheCurrentPlayerIsPlayerOne(player);
+                hasWin = (isPlayerOne && endDataParsed.playerOneVictory) || (!isPlayerOne && !endDataParsed.playerOneVictory);
+            } catch (e) {
+                console.error("Erreur de lecture de endData", e);
+            }
+        }
+
+        const ReturnHome = async () => {
+            try {
+                await request(`/games/${player.player!.id}/seen`, {
+                    method: 'POST',
+                    headers: { ...player.playerHeaders },
+                });
+
+                setPlayer({
+                    ...player,
+                    player: null,
+                });
+            } catch (error) {
+                console.error("Erreur lors du marquage de la partie comme vue :", error);
+            }
+
+            navigate("/");
+        };
+        return (
+            <div className="endGamePanel">
+                <h2>Partie Terminée</h2>
+                {hasWin ? (
+                    <p className='textVictory'>Victoire ! Vous avez coulé tous les navires adverses.</p>
+                ) : (
+                    <p className='textGameOver'>Défaite... Vos navires ont été submergés.</p>
+                )}
+                <br />
+                <button onClick={ReturnHome} className='textEndGameButton'>
+                    Retourner au menu d'accueil
+                </button>
+            </div>
+        );
     }
 
     return (
         <>
-            {itIsOurTurn == -1 ? <p>Chargement en cours...</p> :
-                <section className='theGrids'>
-                    {itIsOurTurn == 1 ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>}
-                    <MyGameGrid/>
-                    <br/><br/><br/>
-                    <GameGridPlay/>
-                </section>
+            {!getGameGrids(player) ? 
+                <>
+                    <p>Vous n'avez pas encore lancé une partie.</p>
+                    {listOfGame.map((e) => (
+                        <article className="aHistory" key={crypto.randomUUID()}>
+                            <div className='listeOfName'>
+                                <p className='nameOne'>{e.nameOne}</p>
+                                <p className='nameTwo'>{e.nameTwo}</p>
+                            </div>
+                            <p className='status'>État : {e.status}</p>
+                            <p className='createdAt'>Début : {e.createdAt}</p>
+                            <button key={e.idGame} onClick={async () => {
+                                try {
+                                    const result = await ConnexionALaPartie(e.idGame, player, "");
+                                    setPlayer(result);
+                                } catch (error) {
+                                    console.error('Échec du chargement des données du joueur :', error);
+                                }
+                            }}>Lancer la partie {e.idGame} !</button>
+                        </article>
+                    ))}
+                </> : 
+                <>
+                    {itIsOurTurn == -1 ? <p>Chargement en cours...</p> :
+                        <section className='theGrids'>
+                            {itIsOurTurn == 1 ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>}
+                            <GameGridPlay itIsOurTurn={itIsOurTurn == 1}/>
+                            <br/><br/><br/>
+                            <MyGameGrid/>
+                        </section>
+                    }
+                </>
             }
         </>
     );

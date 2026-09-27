@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import styles from './Login.module.css'
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router';
+import {PlayerContext, type GameData, type Player} from '../../context/PlayerContext';
 
 export default function Login() {
     const [email, setEmail] = useState(""); 
@@ -9,6 +10,7 @@ export default function Login() {
     const [token, setToken] = useState("");
     const [erreur, setErreur] = useState("");
     const navigate = useNavigate();
+    const { setPlayer } = useContext(PlayerContext);
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
             e.preventDefault();
@@ -24,18 +26,24 @@ export default function Login() {
                 }) 
             })
 
-            const data = await response.json(); 
+            const data : GameData = await response.json(); 
+            const playerHeaders = { Authorization: `Bearer ${data.token}` }
+            const player : Player = {
+                player : data,
+                playerHeaders: playerHeaders,
+                userId: data.user.id,
+            }
+            setPlayer(player);
 
             if (response.ok) {
                 setToken(data.token);
+                console.log(token);
                 navigate("/parties")
                 console.log("Connexion réussie !")
             } else {
                 setErreur("Erreur de connexion veuillez réesayer !");
             }
-
         }
-
     return (
         <div>
             <div className={styles.container}>

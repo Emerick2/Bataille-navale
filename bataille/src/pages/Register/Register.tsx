@@ -28,6 +28,7 @@ export default function Register() {
 
         if (response.ok) {
             setToken(data.token);
+            console.log(token);
             navigate("/parties/nouvelle")
             console.log("Inscription réussie")
         } else {
