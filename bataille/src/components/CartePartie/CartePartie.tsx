@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import type { ResumeAccueil } from '../../types'
+import type { ResumeAccueil } from '../../pages/Register/types'
 import MiniRadar from '../MiniRadar/MiniRadar'
 import CartePartieStyles from './CartePartie.module.css'
 
