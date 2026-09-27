@@ -1,3 +1,30 @@
+# La bataille naval
+Il s’agit d’un projet réaliser en `React` avec les langages de programmation `TypeScript` et `CSS`.
+
+Ce projet a été réalisée par :
+- Émerick Pacaud
+- Armel Zion
+- Paul-Elie Kouakou
+
+### Pour démarrer le projet :
+Pour démarrer le jeu :
+```
+deno task dev
+```
+
+Pour démarrer l’API du jeu :
+```
+cd game-server
+deno task dev
+```
+
+Pour lancer la prévisualisation du jeu :
+```
+deno task preview
+```
+
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.

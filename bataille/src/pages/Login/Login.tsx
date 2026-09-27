@@ -10,7 +10,7 @@ export default function Login() {
     const [token, setToken] = useState("");
     const [erreur, setErreur] = useState("");
     const navigate = useNavigate();
-    const { player, setPlayer } = useContext(PlayerContext);
+    const { setPlayer } = useContext(PlayerContext);
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
             e.preventDefault();
@@ -37,6 +37,7 @@ export default function Login() {
 
             if (response.ok) {
                 setToken(data.token);
+                console.log(token);
                 navigate("/parties")
                 console.log("Connexion réussie !")
             } else {
