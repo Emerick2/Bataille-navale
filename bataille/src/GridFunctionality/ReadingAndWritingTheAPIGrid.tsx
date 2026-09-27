@@ -218,8 +218,9 @@ export const ConnexionALaPartie = async (identifiantPartie: number | undefined, 
                         if (typeof errorBody.error === 'string' && errorBody.error.length > 0) {
                             errorMessage = errorBody.error;
                         }
-                    } catch {
-                        // Keep the HTTP status when the server does not return JSON.
+                    } catch (error) {
+                        console.log(error);
+                        throw new Error("Erreur l'or de l'invitation !")
                     }
                     throw new Error(`Impossible d'inviter le joueur : ${errorMessage}`);
                 }
@@ -293,12 +294,16 @@ export const ListOfAccessibleSections = async (player : Player) : Promise<Histor
             const games : GameData[] = await myGamesResponse.json() as GameData[];
 
             for (let i = 0; i < games.length; i++) {
-                const newObject : HistoryBloc = {
-                    nameOne : games[i].creatorId.toString(),
-                    nameTwo : "Nom2",
-                    status : games[i].status,
-                    createdAt : games[i].createdAt,
-                    idGame : games[i].id
+                const game = games[i];
+                const creator = game.players.find((player) => player.id === game.creatorId);
+                const opponent = game.players.find((player) => player.id !== game.creatorId);
+    
+                const newObject: HistoryBloc = {
+                    nameOne: creator?.email ?? "Joueur inconnu",
+                    nameTwo: opponent?.email ?? "En attente d'un joueur",
+                    status: game.status,
+                    createdAt: game.createdAt,
+                    idGame: game.id
                 };
                 
                 listOfGame.push(newObject);

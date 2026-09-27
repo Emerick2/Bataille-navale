@@ -1,4 +1,5 @@
 import './GameGrid.css'
+import "./pages/History/History.css"
 import React, {useContext, useEffect, useState} from 'react';
 import {ConnexionALaPartie, EndedGame, ItIsPlayerOneTurn, ListOfAccessibleSections, request, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
 import {PlayerContext, type Player} from './context/PlayerContext';
@@ -300,14 +301,22 @@ function GameGrid() {
                 <>
                     <p>Vous n'avez pas encore lancé une partie.</p>
                     {listOfGame.map((e) => (
-                        <button key={e.idGame} onClick={async () => {
-                            try {
-                                const result = await ConnexionALaPartie(e.idGame, player, "");
-                                setPlayer(result);
-                            } catch (error) {
-                                console.error('Échec du chargement des données du joueur :', error);
-                            }
-                        }}>Lancer la partie {e.idGame} !</button>
+                        <article className="aHistory" key={crypto.randomUUID()}>
+                            <div className='listeOfName'>
+                                <p className='nameOne'>{e.nameOne}</p>
+                                <p className='nameTwo'>{e.nameTwo}</p>
+                            </div>
+                            <p className='status'>État : {e.status}</p>
+                            <p className='createdAt'>Début : {e.createdAt}</p>
+                            <button key={e.idGame} onClick={async () => {
+                                try {
+                                    const result = await ConnexionALaPartie(e.idGame, player, "");
+                                    setPlayer(result);
+                                } catch (error) {
+                                    console.error('Échec du chargement des données du joueur :', error);
+                                }
+                            }}>Lancer la partie {e.idGame} !</button>
+                        </article>
                     ))}
                 </> : 
                 <>

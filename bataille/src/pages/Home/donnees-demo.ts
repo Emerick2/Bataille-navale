@@ -1,7 +1,7 @@
 import type { EtatCase, EvenementBriefing, ResumeAccueil } from '../../types'
 
 /**
- * TEMPORAIRE — à supprimer dès que l'API du prof est branchée.
+ * TEMPORAIRE — 
  * Sert uniquement à voir la page pendant le développement.
  */
 
