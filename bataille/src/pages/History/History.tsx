@@ -45,13 +45,16 @@ const LoadHistory = async (player : Player, setLoading : (loading : boolean) => 
 
     for (let i = 0; i < history.length; i++) {
         // console.log(history[0].createdAt);
-        const newObject : HistoryBloc = {
-            nameOne : history[0].creatorId.toString(),
-            // nameTwo : history[0].players.id.toString(),
-            nameTwo : "Nom2",
-            status : history[0].status, // revenir ici pour mettre la bonne valeur.
-            createdAt : history[0].createdAt,
-            idGame : history[0].id
+        const game = history[i];
+        const creator = game.players.find((player) => player.id === game.creatorId);
+        const opponent = game.players.find((player) => player.id !== game.creatorId);
+
+        const newObject: HistoryBloc = {
+            nameOne: creator?.email ?? "Joueur inconnu",
+            nameTwo: opponent?.email ?? "En attente d'un joueur",
+            status: game.status,
+            createdAt: game.createdAt,
+            idGame: game.id
         };
         if (history[0].status == "pending"){
             listOfHistoryBloc.listOfPendingGames.push(newObject);
