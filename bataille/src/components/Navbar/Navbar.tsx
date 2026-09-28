@@ -19,6 +19,7 @@ const Navbar = () => {
     <nav className={NavbarStyle.nav}>
       <span className={NavbarStyle.marque}>Bataille<span>·</span>Navale</span>
       <NavLink to="/" end className={classeLien}>Accueil</NavLink>
+      <NavLink to="/credits" className={classeLien}>Crédits</NavLink>
 
       {status === 'authenticated' ? (
         <>
@@ -35,13 +36,12 @@ const Navbar = () => {
           </button>
         </>
       ) : status === 'anonymous' ? (
-        <>
+        <div className={NavbarStyle.navBarRight}>
           <NavLink to="/connexion" className={classeLien}>Connexion</NavLink>
           <NavLink to="/inscription" className={classeLien}>Inscription</NavLink>
-        </>
+        </div>
       ) : null}
 
-      <NavLink to="/credits" className={classeLien}>Crédits</NavLink>
     </nav>
   )
 }

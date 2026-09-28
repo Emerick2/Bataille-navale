@@ -41,7 +41,7 @@ const AuthPlayerBridge = () => {
       playerHeaders: { Authorization: authorization },
       userId: sessionUserId,
     })
-  }, [status, sessionUserId, sessionToken, currentAuthorization, player, setPlayer])
+  }, [status, sessionUserId, sessionToken, currentAuthorization, player])
 
   return null
 }
