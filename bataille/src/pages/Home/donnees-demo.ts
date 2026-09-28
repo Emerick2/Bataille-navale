@@ -1,4 +1,4 @@
-import type { EtatCase, EvenementBriefing, ResumeAccueil } from '../../types'
+import type { EtatCase, EvenementBriefing, ResumeAccueil } from '../Register/types'
 
 /**
  * TEMPORAIRE — 
