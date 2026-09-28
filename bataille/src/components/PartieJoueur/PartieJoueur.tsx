@@ -1,7 +1,6 @@
 import { Link } from 'react-router'
 import type { GameApiData } from '../../types/game-api'
 import styles from './PartieJoueur.module.css'
-import {AbandonGame} from '../../GridFunctionality/ReadingAndWritingTheAPIGrid'
 import type {Player} from '../../context/PlayerContext'
 
 type PartieJoueurProps = {
@@ -36,12 +35,6 @@ const PartieJoueur = ({ partie, userId, detail, player, idGame, setPlayer }: Par
   return partie.status === 'started' ? (
     <>
       <article>
-        {player != null && player != undefined && idGame != undefined && setPlayer != undefined ? 
-          <button onClick={() => {
-            AbandonGame(player, idGame, setPlayer);
-          }} className={styles.buttonAbandonGame}>Abandonné</button>
-        : null }
-
         <Link className={styles.partie} to={`/parties/${partie.id}`}>
           {contenu}
         </Link>

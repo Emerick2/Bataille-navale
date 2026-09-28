@@ -1,7 +1,7 @@
 import './GameGrid.css'
 import "./pages/History/History.css"
 import React, {useContext, useEffect, useState} from 'react';
-import {ConnexionALaPartie, EndedGame, ItIsPlayerOneTurn, ListOfAccessibleSections, request, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
+import {AbandonGame, ConnexionALaPartie, EndedGame, ItIsPlayerOneTurn, ListOfAccessibleSections, request, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
 import {PlayerContext, type Player} from './context/PlayerContext';
 import type {HistoryBloc} from './pages/History/History';
 import {useNavigate} from 'react-router';
@@ -301,6 +301,11 @@ function GameGrid() {
         );
     }
 
+    let idGame = -1;
+    if (player != null && player.player != null) {
+        idGame = player.player.id;
+    }
+
     return (
         <>
             {!getGameGrids(player) ? 
@@ -326,6 +331,12 @@ function GameGrid() {
                     ))}
                 </> : 
                 <>
+                    {player != null && player != undefined && idGame !== -1 && player.player != null && setPlayer != undefined ? 
+                        <button onClick={() => {
+                            AbandonGame(player, idGame, setPlayer);
+                        }} className='buttonAbandonGame'>Abandonné</button>
+                    : null }
+
                     {itIsOurTurn == -1 ? <p>Chargement en cours...</p> :
                         <section className='theGrids'>
                             {itIsOurTurn == 1 ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>}
