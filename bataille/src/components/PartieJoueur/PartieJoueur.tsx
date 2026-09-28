@@ -12,7 +12,7 @@ type PartieJoueurProps = {
   setPlayer?: (player: Player | null) => void;
 }
 
-const PartieJoueur = ({ partie, userId, detail, player, idGame, setPlayer }: PartieJoueurProps) => {
+const PartieJoueur = ({ partie, userId, detail }: PartieJoueurProps) => {
   const adversaire = partie.players.find((joueur) => joueur.id !== userId)
   const statut = partie.status === 'started'
     ? partie.isYourTurn ? 'À vous de jouer' : 'En attente de l’adversaire'
