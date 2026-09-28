@@ -160,7 +160,7 @@ export const ConnexionALaPartie = async (identifiantPartie: number | undefined, 
     console.log("Début connexion");
 
     try {
-        if (mailInvitee && mailInvitee !== "") {
+        if (mailInvitee !== "") {
             const myGamesResponse = await request('/games/mine', {
                 method: 'GET',
                 headers: { ...player.playerHeaders },
@@ -176,7 +176,7 @@ export const ConnexionALaPartie = async (identifiantPartie: number | undefined, 
 
             if (existingGameWithMail) {
                 console.log(`Partie existante trouvée avec ${mailInvitee} (ID: ${existingGameWithMail.id})`);
-                const finalGameResponse = await ReadPartOfTheGame(existingGameWithMail.id, player.playerHeaders);
+                const finalGameResponse : Response | null = await ReadPartOfTheGame(existingGameWithMail.id, player.playerHeaders);
                 if (finalGameResponse && finalGameResponse.ok) {
                     return {
                         ...player,
@@ -317,4 +317,49 @@ export const ListOfAccessibleSections = async (player : Player) : Promise<Histor
     }
 
     return listOfGame;
+}
+
+
+export const AbandonGame = async (player : Player, idGame : number, setPlayer: (player: Player | null) => void) => {
+    try {
+        console.log("ici");
+        const myGamesResponse = await request('/games/mine', {
+            method: 'GET',
+            headers: { ...player.playerHeaders },
+        });
+
+        if (myGamesResponse.ok) {
+            const myGames: GameData[] = await myGamesResponse.json() as GameData[];
+            const existingGameWithId : GameData | undefined = myGames.find((g) => g.id === idGame);
+            
+            if (existingGameWithId != null || existingGameWithId != undefined) {
+                if (player.player != null) {
+                    let thisIsPlayerOne = true;
+                    if (TheCurrentPlayerIsPlayerOne(player) == false){
+                        thisIsPlayerOne = false;
+                    }
+
+                    const updatedGame = await EndedGame(
+                        player.player.id,
+                        thisIsPlayerOne,
+                        player.playerHeaders,
+                    )
+                    if (updatedGame) {
+                        setPlayer({
+                            ...player,
+                            player: updatedGame,
+                        });
+                    }
+                } else {
+                    console.log("Player.player == null donc on ne peut pas abendoné la partie.");
+                }
+            } else {
+                console.log("La parte n'as pas été trouvée.");
+            }
+        } else {
+            console.log("Nos parties n'ont pas été trouvée.");
+        }
+    } catch (error) {
+        console.error(error);
+    }
 }

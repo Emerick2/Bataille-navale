@@ -1,14 +1,18 @@
 import { Link } from 'react-router'
 import type { GameApiData } from '../../types/game-api'
 import styles from './PartieJoueur.module.css'
+import type {Player} from '../../context/PlayerContext'
 
 type PartieJoueurProps = {
-  partie: GameApiData
-  userId: number
-  detail?: string
+  partie: GameApiData;
+  userId: number;
+  detail?: string;
+  player? : Player | null;
+  idGame? : number;
+  setPlayer?: (player: Player | null) => void;
 }
 
-const PartieJoueur = ({ partie, userId, detail }: PartieJoueurProps) => {
+const PartieJoueur = ({ partie, userId, detail, player, idGame, setPlayer }: PartieJoueurProps) => {
   const adversaire = partie.players.find((joueur) => joueur.id !== userId)
   const statut = partie.status === 'started'
     ? partie.isYourTurn ? 'À vous de jouer' : 'En attente de l’adversaire'
@@ -29,9 +33,13 @@ const PartieJoueur = ({ partie, userId, detail }: PartieJoueurProps) => {
   )
 
   return partie.status === 'started' ? (
-    <Link className={styles.partie} to={`/parties/${partie.id}`}>
-      {contenu}
-    </Link>
+    <>
+      <article>
+        <Link className={styles.partie} to={`/parties/${partie.id}`}>
+          {contenu}
+        </Link>
+      </article>
+    </>
   ) : (
     <article className={styles.partie}>
       {contenu}
