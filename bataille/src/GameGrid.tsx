@@ -1,7 +1,7 @@
 import './GameGrid.css'
 import "./pages/History/History.css"
 import React, {useContext, useEffect, useState} from 'react';
-import {ConnexionALaPartie, EndedGame, ItIsPlayerOneTurn, ListOfAccessibleSections, request, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
+import {AbandonGame, ConnexionALaPartie, EndedGame, ItIsPlayerOneTurn, ListOfAccessibleSections, request, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
 import {PlayerContext, type Player} from './context/PlayerContext';
 import type {HistoryBloc} from './pages/History/History';
 import {useNavigate} from 'react-router';
@@ -229,24 +229,30 @@ function GameGrid() {
 
     useEffect(() => {
         let isActive = true;
+        if (player == null){
+            return;
+        }
 
-        if (player != null){
-            const FindGame = async () => {
-                try {
-                    const newListOfGame : HistoryBloc[] = await ListOfAccessibleSections(player)
-                    if (isActive){
-                        setListOfGame(newListOfGame);
-                    }
-                } catch (error) {
-                    if (isActive) {
-                        console.error("Erreur lors de la récupération des parties", error);
-                    }
+        const FindGame = async () => {
+            try {
+                const newListOfGame : HistoryBloc[] = await ListOfAccessibleSections(player)
+                if (isActive){
+                    setListOfGame(newListOfGame);
+                }
+            } catch (error) {
+                if (isActive) {
+                    console.error("Erreur lors de la récupération des parties", error);
                 }
             }
-            FindGame();
         }
+        FindGame();
+
+        const timer : number = window.setInterval(FindGame, 5000);
+
+
         return () => {
             isActive = false;
+            window.clearInterval(timer);
         };
     }, [player]);
 
@@ -295,6 +301,11 @@ function GameGrid() {
         );
     }
 
+    let idGame = -1;
+    if (player != null && player.player != null) {
+        idGame = player.player.id;
+    }
+
     return (
         <>
             {!getGameGrids(player) ? 
@@ -320,11 +331,24 @@ function GameGrid() {
                     ))}
                 </> : 
                 <>
+                    {player != null && player != undefined && idGame !== -1 && player.player != null && setPlayer != undefined ? 
+                        <button onClick={() => {
+                            AbandonGame(player, idGame, setPlayer);
+                        }} className='buttonAbandonGame'>Abandonné</button>
+                    : null }
+
                     {itIsOurTurn == -1 ? <p>Chargement en cours...</p> :
                         <section className='theGrids'>
                             {itIsOurTurn == 1 ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>}
+                            <h2>Votre plateau</h2>
                             <GameGridPlay itIsOurTurn={itIsOurTurn == 1}/>
-                            <br/><br/><br/>
+                            <br/>
+                            <p>Cliquez sur la grille pour tirer sur un bateau !</p>
+                            <p>- Si le tire renvoie un rond, vous avez coulé.</p>
+                            <p>- Si le tire renvoie un carré, vous avez touché une partie du bateau de votre ennemie.</p>
+                            
+                            <br/><br/><hr/><br/>
+                            <h2>Vos bateaux</h2>
                             <MyGameGrid/>
                         </section>
                     }

@@ -1,4 +1,4 @@
-import type { EvenementBriefing } from '../../types'
+import type { EvenementBriefing } from '../../pages/Register/types'
 import BriefingStyles from './Briefing.module.css'
 
 type BriefingProps = {

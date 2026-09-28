@@ -2,19 +2,19 @@ import { useContext, useState } from 'react'
 import styles from './Login.module.css'
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router';
-import {PlayerContext, type GameData, type Player} from '../../context/PlayerContext';
+import { AuthContext, isAuthSession } from '../../context/AuthContext'
 
 export default function Login() {
     const [email, setEmail] = useState(""); 
     const [motDePasse, setMotDePasse] = useState("");
-    const [token, setToken] = useState("");
     const [erreur, setErreur] = useState("");
     const navigate = useNavigate();
-    const { setPlayer } = useContext(PlayerContext);
+    const { login } = useContext(AuthContext);
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
             e.preventDefault();
     
+        try {
             const response = await fetch("http://localhost:8000/auth/login", {
                 method: "POST",
                 headers: {
@@ -26,23 +26,17 @@ export default function Login() {
                 }) 
             })
 
-            const data : GameData = await response.json(); 
-            const playerHeaders = { Authorization: `Bearer ${data.token}` }
-            const player : Player = {
-                player : data,
-                playerHeaders: playerHeaders,
-                userId: data.user.id,
-            }
-            setPlayer(player);
-
-            if (response.ok) {
-                setToken(data.token);
-                console.log(token);
-                navigate("/parties")
-                console.log("Connexion réussie !")
-            } else {
+            const payload: unknown = await response.json();
+            if (!response.ok || !isAuthSession(payload)) {
                 setErreur("Erreur de connexion veuillez réesayer !");
+                return;
             }
+
+            login(payload);
+            navigate("/parties");
+        } catch {
+            setErreur("Erreur de connexion veuillez réesayer !");
+        }
         }
     return (
         <div>
