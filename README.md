@@ -2,8 +2,6 @@
 
 Jeu de bataille navale au tour par tour, réalisé en **React** et **TypeScript** dans le cadre d'un projet de groupe.
 
-Le principe : on tire, on ferme l'onglet, et l'adversaire joue quand il peut. Pas besoin d'être connecté en même temps que lui.
-
 ## Technologies utilisées
 
 - **React** : construction de l'interface
