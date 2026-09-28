@@ -4,6 +4,7 @@ import PartieJoueur from '../../components/PartieJoueur/PartieJoueur'
 import { AuthContext } from '../../context/AuthContext'
 import type { GameApiData } from '../../types/game-api'
 import { getMyGames, GameApiError } from '../../services/gameApi'
+import {PlayerContext} from '../../context/PlayerContext'
 
 const Games = () => {
     const { status, token, user } = useContext(AuthContext)
@@ -11,6 +12,8 @@ const Games = () => {
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [retryCount, setRetryCount] = useState(0)
+    const { player, setPlayer } = useContext(PlayerContext);
+    
 
     useEffect(() => {
         const controller = new AbortController()
@@ -80,7 +83,7 @@ const Games = () => {
                                             <h2>À vous de jouer</h2>
                                             <div className="listeParties">
                                                 {aVousDeJouer.map((partie) => (
-                                                    <PartieJoueur key={partie.id} partie={partie} userId={user!.id} />
+                                                    <PartieJoueur key={partie.id} partie={partie} userId={user!.id} player={player} idGame={partie.id} setPlayer={setPlayer}/>
                                                 ))}
                                             </div>
                                         </>

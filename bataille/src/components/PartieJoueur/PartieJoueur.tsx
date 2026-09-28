@@ -1,14 +1,19 @@
 import { Link } from 'react-router'
 import type { GameApiData } from '../../types/game-api'
 import styles from './PartieJoueur.module.css'
+import {AbandonGame} from '../../GridFunctionality/ReadingAndWritingTheAPIGrid'
+import type {Player} from '../../context/PlayerContext'
 
 type PartieJoueurProps = {
-  partie: GameApiData
-  userId: number
-  detail?: string
+  partie: GameApiData;
+  userId: number;
+  detail?: string;
+  player? : Player | null;
+  idGame? : number;
+  setPlayer?: (player: Player | null) => void;
 }
 
-const PartieJoueur = ({ partie, userId, detail }: PartieJoueurProps) => {
+const PartieJoueur = ({ partie, userId, detail, player, idGame, setPlayer }: PartieJoueurProps) => {
   const adversaire = partie.players.find((joueur) => joueur.id !== userId)
   const statut = partie.status === 'started'
     ? partie.isYourTurn ? 'À vous de jouer' : 'En attente de l’adversaire'
@@ -18,6 +23,12 @@ const PartieJoueur = ({ partie, userId, detail }: PartieJoueurProps) => {
 
   const contenu = (
     <>
+      {player != null && player != undefined && idGame != undefined && setPlayer != undefined ? 
+        <button onClick={() => {
+          AbandonGame(player, idGame, setPlayer);
+        }}>Abandonné</button>
+      : null }
+      
       <span className={styles.statut}>{statut}</span>
       <strong className={styles.adversaire}>
         {adversaire ? `Partie contre ${adversaire.email}` : `Partie n° ${partie.id}`}
