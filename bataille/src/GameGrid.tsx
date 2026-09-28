@@ -229,24 +229,30 @@ function GameGrid() {
 
     useEffect(() => {
         let isActive = true;
+        if (player == null){
+            return;
+        }
 
-        if (player != null){
-            const FindGame = async () => {
-                try {
-                    const newListOfGame : HistoryBloc[] = await ListOfAccessibleSections(player)
-                    if (isActive){
-                        setListOfGame(newListOfGame);
-                    }
-                } catch (error) {
-                    if (isActive) {
-                        console.error("Erreur lors de la récupération des parties", error);
-                    }
+        const FindGame = async () => {
+            try {
+                const newListOfGame : HistoryBloc[] = await ListOfAccessibleSections(player)
+                if (isActive){
+                    setListOfGame(newListOfGame);
+                }
+            } catch (error) {
+                if (isActive) {
+                    console.error("Erreur lors de la récupération des parties", error);
                 }
             }
-            FindGame();
         }
+        FindGame();
+
+        const timer : number = window.setInterval(FindGame, 5000);
+
+
         return () => {
             isActive = false;
+            window.clearInterval(timer);
         };
     }, [player]);
 
