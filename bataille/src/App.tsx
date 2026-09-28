@@ -8,17 +8,18 @@ import History from './pages/History/History'
 import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import NotFound from './pages/NotFound/NotFound'
+import {PlayerProvider} from './context/PlayerContext'
 import Credits from './pages/Credits/Credits'
-import Game from './pages/Game/Game'
 
 function App() {
   return (
+    <PlayerProvider>
       <Routes>
           <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
               <Route path="/parties" element={<Games/>} />
               <Route path="/parties/nouvelle" element={<NewGame/>} />
-              <Route path="/parties/:gameId" element={<Game />} />
+              {/* <Route path="/parties/:id" element={<Game/>} /> */}
               <Route path="/historique" element={<History/>} />
               <Route path="/connexion" element={<Login/>} />
               <Route path="/inscription" element={<Register/>} />
@@ -26,6 +27,7 @@ function App() {
           </Route>
         <Route path="*" element={<NotFound/>} />
       </Routes>
+    </PlayerProvider>
   )
 }
 
