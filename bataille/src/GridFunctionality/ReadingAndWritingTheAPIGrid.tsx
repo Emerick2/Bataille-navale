@@ -322,7 +322,6 @@ export const ListOfAccessibleSections = async (player : Player) : Promise<Histor
 
 export const AbandonGame = async (player : Player, idGame : number, setPlayer: (player: Player | null) => void) => {
     try {
-        console.log("ici");
         const myGamesResponse = await request('/games/mine', {
             method: 'GET',
             headers: { ...player.playerHeaders },
