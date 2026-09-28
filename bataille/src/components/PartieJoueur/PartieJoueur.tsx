@@ -23,12 +23,6 @@ const PartieJoueur = ({ partie, userId, detail, player, idGame, setPlayer }: Par
 
   const contenu = (
     <>
-      {player != null && player != undefined && idGame != undefined && setPlayer != undefined ? 
-        <button onClick={() => {
-          AbandonGame(player, idGame, setPlayer);
-        }}>Abandonné</button>
-      : null }
-      
       <span className={styles.statut}>{statut}</span>
       <strong className={styles.adversaire}>
         {adversaire ? `Partie contre ${adversaire.email}` : `Partie n° ${partie.id}`}
@@ -40,9 +34,19 @@ const PartieJoueur = ({ partie, userId, detail, player, idGame, setPlayer }: Par
   )
 
   return partie.status === 'started' ? (
-    <Link className={styles.partie} to={`/parties/${partie.id}`}>
-      {contenu}
-    </Link>
+    <>
+      <article>
+        {player != null && player != undefined && idGame != undefined && setPlayer != undefined ? 
+          <button onClick={() => {
+            AbandonGame(player, idGame, setPlayer);
+          }} className={styles.buttonAbandonGame}>Abandonné</button>
+        : null }
+
+        <Link className={styles.partie} to={`/parties/${partie.id}`}>
+          {contenu}
+        </Link>
+      </article>
+    </>
   ) : (
     <article className={styles.partie}>
       {contenu}
