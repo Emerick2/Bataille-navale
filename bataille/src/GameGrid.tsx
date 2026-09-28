@@ -329,8 +329,15 @@ function GameGrid() {
                     {itIsOurTurn == -1 ? <p>Chargement en cours...</p> :
                         <section className='theGrids'>
                             {itIsOurTurn == 1 ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>}
+                            <h2>Votre plateau</h2>
                             <GameGridPlay itIsOurTurn={itIsOurTurn == 1}/>
-                            <br/><br/><br/>
+                            <br/>
+                            <p>Cliquez sur la grille pour tirer sur un bateau !</p>
+                            <p>- Si le tire renvoie un rond, vous avez coulé.</p>
+                            <p>- Si le tire renvoie un carré, vous avez touché une partie du bateau de votre ennemie.</p>
+                            
+                            <br/><br/><hr/><br/>
+                            <h2>Vos bateaux</h2>
                             <MyGameGrid/>
                         </section>
                     }
