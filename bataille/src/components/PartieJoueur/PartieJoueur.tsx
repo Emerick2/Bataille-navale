@@ -10,7 +10,7 @@ type PartieJoueurProps = {
   player? : Player | null;
   idGame? : number;
   setPlayer?: (player: Player | null) => void;
-}
+} 
 
 const PartieJoueur = ({ partie, userId, detail }: PartieJoueurProps) => {
   const adversaire = partie.players.find((joueur) => joueur.id !== userId)
