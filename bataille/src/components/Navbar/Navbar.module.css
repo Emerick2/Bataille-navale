@@ -42,3 +42,10 @@
   .nav { gap: 16px; flex-wrap: wrap; }
   .lien { font-size: 13.5px; }
 }
+
+.navBarRight{
+  display: flex;
+  position: absolute;
+  right: 15px;
+  gap:15px;
+}
