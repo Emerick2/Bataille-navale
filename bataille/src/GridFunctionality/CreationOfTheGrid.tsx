@@ -1,5 +1,9 @@
 import {height, numberOfBoat} from "../GameGrid";
 
+/**
+ * Cette fonction va permettre de vidée une grille de 10 sur 10.
+ * Renvoie : Une grille vide de 10 sur 10.
+ */
 export const CleanGrid = () : number[][] => {
     const t = [];
     for (let i = 0; i < height; i++) {
@@ -8,6 +12,10 @@ export const CleanGrid = () : number[][] => {
     return t;
 }
 
+/**
+ * Cette fonction va permettre de placer les bateaux sur la carte.
+ * Renvoie : Une grille avec les bateaux positionnés aux bons endroits.
+ */
 export const BuildTheBoard = () : number[][] => {
     const t = CleanGrid();
 
@@ -16,7 +24,11 @@ export const BuildTheBoard = () : number[][] => {
     while (boat > 0) {
         const x = Math.floor(Math.random() * height);
         const y = Math.floor(Math.random() * height);
-        let taille = Math.floor(Math.random() * 4);
+        let taille = Math.floor(Math.random() * 6)+1;
+        if (taille-1 >= boat){
+            taille+=1
+        }
+
         if (taille > boat){
             taille = boat;
         }
