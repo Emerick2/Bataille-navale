@@ -90,12 +90,10 @@ L'interface communique avec le serveur par des requêtes HTTP vers son API REST,
 
 Schéma détaillé : `docs/architecture.md` (produit en séance 3, pas encore présent).
 
-## Réglages de la bataille navale
- 
-| Réglage | Valeur par défaut | Valeurs acceptées | Rôle |
-|---|---|---|---|
-| height dans  bataille/src/GameGrid.tsx | 10 | Un nombre entre 2 et 20. | la largeur de la grille du jeu. |
-| numberOfBoat  dans  bataille/src/GameGrid.tsx | 9 | Nombre entier entre 2 et la largeur de la grille. | Le nombre de segments de bateau dans la partie. |
+## Documentation détaillée
+
+- [Guide de démarrage](bataille/docs/readme-demarrage.md) : procédure complète pour lancer le projet.
+- [Réglages](bataille/docs/reglages.md) : taille de la grille, nombre de bateaux et leurs valeurs acceptées.
 
 ## Usage
 
