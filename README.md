@@ -88,6 +88,8 @@ Bataille-navale/
 
 Chaque page a son propre fichier `NomDeLaPage.module.css`. Les couleurs et la police viennent des variables définies dans `index.css` (`var(--texte)`, `var(--sonar)`, etc.) pour garder un rendu cohérent.
 
+## Usage
+Vous pouvez utiliser ce jeu de bataille navale comme base pour créer votre propre jeu de bataille navale sans devoir recréer les bases du jeu. Vous pouvez également l'utiliser pour voir comment ce jeu fonctionne, si vous êtes curieux ! Ou bien, vous pouvez l'utiliser pour tout simplement jouer au jeu et passer un bon moment.
 
 
 ## Contribuer
@@ -96,8 +98,11 @@ Les commandes d'installation des dépendances du projet sont décrites ci-dessus
 
 
 ## Contact
-- [Emerick Pacaud](https://github.com/Emerick2) | pacaudemerick@gmail.com
-- [Armel Zion](https://github.com/Armel-zion)
-- [Paul-Elie Kouakou](https://github.com/pauloo10-ynov)
+
+| Prénom/Nom | E-Mail |
+| --- | --- |
+| [Emerick Pacaud](https://github.com/Emerick2) | pacaudemerick@gmail.com|
+| [Armel Zion](https://github.com/Armel-zion) | goyglouxarmel.zion@ynov.com
+| [Paul-Elie Kouakou](https://github.com/pauloo10-ynov) | 
 
 
