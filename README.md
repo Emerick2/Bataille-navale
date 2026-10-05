@@ -17,7 +17,7 @@
 - [Deno](https://deno.com/) 2.9 ou plus, pour lancer le serveur backend
 
 ## Installation et démarrage
-
+Pour voir toutes les informations d'installation du dépôt, [cliquez ici](https://github.com/Emerick2/Bataille-navale/blob/docs/readme-demarrage/bataille/docs/readme-demarrage.md).
 ### 1. Le serveur backend
 
 Dans le dossier du serveur, lancer :
