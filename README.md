@@ -88,6 +88,13 @@ Bataille-navale/
 
 Chaque page a son propre fichier `NomDeLaPage.module.css`. Les couleurs et la police viennent des variables définies dans `index.css` (`var(--texte)`, `var(--sonar)`, etc.) pour garder un rendu cohérent.
 
+## Réglages de la batail naval
+ 
+| Réglage | Valeur par défaut | Valeurs acceptées | Rôle |
+|---|---|---|---|
+| height dans  bataille/src/GameGrid.tsx | 10 | Un nombre entre 2 et 20. | la largeur de la grille du jeu. |
+| numberOfBoat  dans  bataille/src/GameGrid.tsx | 9 | Nombre entier entre 2 et la largeur de la grille. | Le nombre de segments de bateau dans la partie. |
+
 ## Usage
 Vous pouvez utiliser ce jeu de bataille navale comme base pour créer votre propre jeu de bataille navale sans devoir recréer les bases du jeu. Vous pouvez également l'utiliser pour voir comment ce jeu fonctionne, si vous êtes curieux ! Ou bien, vous pouvez l'utiliser pour tout simplement jouer au jeu et passer un bon moment.
 
