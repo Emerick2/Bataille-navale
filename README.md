@@ -57,6 +57,10 @@ L'application est alors accessible à l'adresse affichée dans le terminal (gén
 
 > Si vous rencontrez une erreur, partagez-la nous dans une issue pour que nous puissions la corriger, bonne partie !
 
+### 3. Le résultat attendu
+<img src="bataille/docs/images/accueil.png" alt="Image de l'accueil" width="70%">
+
+
 ## Pages de l'application
 
 | Route | Page |
