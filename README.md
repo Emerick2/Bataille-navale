@@ -21,10 +21,16 @@ Le projet a été réalisé en équipe de trois, en **React** et **TypeScript**,
 - [Deno](https://deno.com/) 2.9 ou plus, pour lancer le serveur backend
 
 ## Installation et démarrage
+> Ici, vous allez voir comment démarrer le projet sur votre ordinateur.
 
-### 1. Le serveur backend
+### 1. Le serveur backend, l'API
+Commencer par vous déplacer vers le dossier du serveur :
 
-Dans le dossier du serveur, lancer :
+```bash
+cd bataille/game-server
+```
+
+Maintenant que vous êtes dans ce dossier, utilisez la commande suivante pour ouvrir l'API :
 
 ```bash
 deno task dev
@@ -33,18 +39,31 @@ deno task dev
 Le serveur écoute par défaut sur `http://localhost:8000`. Sa documentation interactive est disponible sur `http://localhost:8000/docs`.
 
 ### 2. Le frontend
-
-Le projet React se trouve dans le dossier `bataille/`. Dans un **second terminal** :
-
+Cette fois-ci, il vous faudra tout d'abord aller dans le dossier contenant le frontend, il se trouve dans le dossier `bataille`.
+Vous pouvez y aller en faisant :
 ```bash
 cd bataille
+```
+
+S'il s'agit de votre premier démarrage, vous devrez tout d'abord télécharger les dépendances. Pour cela, faites :
+```bash
 npm install
+```
+
+Maintenant que vous êtes dans le bon dossier avec toutes les dépendances, démarrez le projet avec :
+```bash
 npm run dev
 ```
 
 L'application est alors accessible à l'adresse affichée dans le terminal (généralement `http://localhost:5173`).
 
 > Les deux serveurs doivent tourner en même temps pour que l'inscription et la connexion fonctionnent.
+
+> Si vous rencontrez une erreur, partagez-la nous dans une issue pour que nous puissions la corriger, bonne partie !
+
+### 3. Le résultat attendu
+<img src="bataille/docs/images/accueil.png" alt="Image de l'accueil" width="70%">
+
 
 ## Pages de l'application
 
@@ -71,6 +90,17 @@ L'interface communique avec le serveur par des requêtes HTTP vers son API REST,
 
 Schéma détaillé : `docs/architecture.md` (produit en séance 3, pas encore présent).
 
+## Réglages de la bataille navale
+ 
+| Réglage | Valeur par défaut | Valeurs acceptées | Rôle |
+|---|---|---|---|
+| height dans  bataille/src/GameGrid.tsx | 10 | Un nombre entre 2 et 20. | la largeur de la grille du jeu. |
+| numberOfBoat  dans  bataille/src/GameGrid.tsx | 9 | Nombre entier entre 2 et la largeur de la grille. | Le nombre de segments de bateau dans la partie. |
+
+## Usage
+
+Vous pouvez utiliser ce jeu de bataille navale comme base pour créer votre propre jeu de bataille navale sans devoir recréer les bases du jeu. Vous pouvez également l'utiliser pour voir comment ce jeu fonctionne, si vous êtes curieux ! Ou bien, vous pouvez l'utiliser pour tout simplement jouer au jeu et passer un bon moment.
+
 ## Organisation du dépôt
 
 | Chemin | Contenu |
@@ -92,9 +122,11 @@ Chaque page a son propre fichier `NomDeLaPage.module.css`. Les couleurs et la po
 Toute modification de ce projet passe par une Pull Request dédiée à une issue (un groupe d'issues) en particulier. Si vous voyez un problème ou un ajout à réaliser sur ce projet, il vous faudra donc faire une issue décrite en quatre étapes. Créer une branche qui sera dédiée à la résolution de cette issue puis faire une Pull Request en y assignant un autre membre du groupe. Celui-ci relira votre travail et pourra ainsi valider ou non son ajout dans le projet.
 Les commandes d'installation des dépendances du projet sont décrites ci-dessus.
 
-
 ## Contact
-
-Équipe Bataille Navale : [Émerick Pacaud](https://github.com/Emerick2), [Armel Zion](https://github.com/Armel-zion) et [Paul-Elie Kouakou](https://github.com/pauloo10-ynov).
+| Prénom/Nom | E-Mail |
+| --- | --- |
+| [Emerick Pacaud](https://github.com/Emerick2) | pacaudemerick@gmail.com|
+| [Armel Zion](https://github.com/Armel-zion) | goyglouxarmel.zion@ynov.com
+| [Paul-Elie Kouakou](https://github.com/pauloo10-ynov) | 
 
 Pour toute question ou tout problème, [ouvrez une issue](https://github.com/Emerick2/Bataille-navale/issues) sur ce dépôt.
