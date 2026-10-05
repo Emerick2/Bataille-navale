@@ -88,7 +88,7 @@ Bataille-navale/
 
 Chaque page a son propre fichier `NomDeLaPage.module.css`. Les couleurs et la police viennent des variables définies dans `index.css` (`var(--texte)`, `var(--sonar)`, etc.) pour garder un rendu cohérent.
 
-## Réglages de la batail naval
+## Réglages de la bataille navale
  
 | Réglage | Valeur par défaut | Valeurs acceptées | Rôle |
 |---|---|---|---|
