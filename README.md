@@ -128,3 +128,4 @@ Les commandes d'installation des dépendances du projet sont décrites ci-dessus
 | [Paul-Elie Kouakou](https://github.com/pauloo10-ynov) | 
 
 Pour toute question ou tout problème, [ouvrez une issue](https://github.com/Emerick2/Bataille-navale/issues) sur ce dépôt.
+ 
