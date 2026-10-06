@@ -39,8 +39,8 @@ deno task dev
 Le serveur écoute par défaut sur `http://localhost:8000`. Sa documentation interactive est disponible sur `http://localhost:8000/docs`.
 
 ### 2. Le frontend
-Cette fois-ci, il vous faudra tout d'abord aller dans le dossier contenant le frontend, il se trouve dans le dossier `bataille`.
-Vous pouvez y aller en faisant :
+Dans un second terminal, depuis la racine du projet, accédez au dossier du frontend :
+
 ```bash
 cd bataille
 ```
