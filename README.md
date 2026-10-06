@@ -18,7 +18,20 @@ Le projet a été réalisé en équipe de trois, en **React** et **TypeScript**,
 ## Prérequis
 
 - [Node.js](https://nodejs.org/) et npm
-- [Deno](https://deno.com/) 2.9 ou plus, pour lancer le serveur backend
+- [Deno](https://deno.com/) 2.9 ou plus, pour lancer le serveur backend. Pour l'installer :
+  - Windows (PowerShell) :
+
+    ```powershell
+    irm https://deno.land/install.ps1 | iex
+    ```
+
+  - macOS / Linux :
+
+    ```bash
+    curl -fsSL https://deno.land/install.sh | sh
+    ```
+
+  - Vérification : `deno --version` doit afficher une version 2.9 ou plus.
 
 ## Installation et démarrage
 > Ici, vous allez voir comment démarrer le projet sur votre ordinateur.
