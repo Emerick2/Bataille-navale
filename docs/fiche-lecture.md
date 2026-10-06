@@ -38,8 +38,10 @@ Un utilisateur qui ne connaît pas le projet pourra également modifier très fa
 C'est la section qui compte. Deux corrections concrètes, applicables aujourd'hui.
 
 
-1. À COMPLÉTER — correction, fichier visé, et ce qui change pour le lecteur.
-2. À COMPLÉTER — correction, fichier visé, et ce qui change pour le lecteur.
+1. Liste de contrôle finale — Donner plus de détails pour permettre à l'utilisateur de savoir ce qui doit apparaître dans le terminal après les commandes pour lancer le projet, README.md, le lecteur doit pouvoir vérifier étape par étape que son logiciel est bien lancé sans erreur.
+
+
+2. Sources datées — Ajouter des dates horodatées à chaque section utile, READEM.md, le lecteur doit pouvoir savoir à quelles dates les informations ont été écrites. Cela facilitera aussi pour les auteurs du README le fait de savoir qu'il faut vérifier que les données sont toujours d'actualité, puisqu'ils se rendront plus facilement compte qu'un fichier n'est plus à jour.
 
 
 Correction déjà appliquée dans le dépôt : À COMPLÉTER (renvoi vers la contribution).
