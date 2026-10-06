@@ -1,7 +1,7 @@
 .nav {
   display: flex;
   align-items: center;
-  gap: 26px;
+  gap: 20px;
   padding: 18px 24px;
   border-bottom: 1px solid var(--border);
   background: rgba(14, 22, 33, .72);
@@ -17,7 +17,7 @@
   font-size: 17px;
   letter-spacing: .06em;
   text-transform: uppercase;
-  margin-right: 12px;
+  margin-right: 8px;
 }
 
 .marque span { color: var(--sonar); }
@@ -41,4 +41,11 @@
 @media (max-width: 700px) {
   .nav { gap: 16px; flex-wrap: wrap; }
   .lien { font-size: 13.5px; }
+}
+
+.navBarRight{
+  display: flex;
+  position: absolute;
+  right: 15px;
+  gap:15px;
 }

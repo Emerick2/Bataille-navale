@@ -1,36 +1,40 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import type { FormEvent } from 'react';
 import styles from './Register.module.css';
 import { useNavigate } from 'react-router';
+import { AuthContext, isAuthSession } from '../../context/AuthContext';
 
 export default function Register() {
     const [email, setEmail] = useState("");
     const [motDePasse, setMotDePasse] = useState("");
-    const [token, setToken] = useState("");
     const [erreur, setErreur] = useState("");
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext);
 
    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        const response = await fetch("http://localhost:8000/auth/signup", {
-            method: "POST",
-            headers: {
-                "content-type": "application/json"
-            },
-            body: JSON.stringify({
-                email: email,
-                password: motDePasse
-            }) 
-        })
+        try {
+            const response = await fetch("http://localhost:8000/auth/signup", {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: motDePasse
+                })
+            })
 
-        const data = await response.json(); 
+            const payload: unknown = await response.json();
+            if (!response.ok || !isAuthSession(payload)) {
+                setErreur("Erreur d'inscription veuillez réesayer !");
+                return;
+            }
 
-        if (response.ok) {
-            setToken(data.token);
-            navigate("/parties/nouvelle")
-            console.log("Inscription réussie")
-        } else {
+            login(payload);
+            navigate("/parties/nouvelle");
+        } catch {
             setErreur("Erreur d'inscription veuillez réesayer !");
         }
     }

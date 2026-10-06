@@ -44,6 +44,7 @@ const routes: Route[] = [
   route("POST", "/games/:id/seen", (req, p) => markGameSeen(req, Number(p.id))),
   route("GET", "/games/:id", (req, p) => getGame(req, Number(p.id))),
   route("PUT", "/games/:id/state", (req, p) => setGameState(req, Number(p.id))),
+  // route("PUT", "/games/:id/end", (req, p) => setGameEnd(req, Number(p.id))),
 ];
 
 async function handleRequest(req: Request): Promise<Response> {
@@ -66,11 +67,11 @@ async function handleRequest(req: Request): Promise<Response> {
 Deno.serve({ port: Number(Deno.env.get("PORT") ?? 8000) }, async (req) => {
   try {
     return await handleRequest(req);
-  } catch (err) {
-    if (err instanceof HttpError) {
-      return json({ error: err.message }, err.status);
+  } catch (error) {
+    if (error instanceof HttpError) {
+      return json({ error: error.message }, error.status);
     }
-    console.error(err);
+    console.error(error);
     return json({ error: "Internal server error" }, 500);
   }
 });

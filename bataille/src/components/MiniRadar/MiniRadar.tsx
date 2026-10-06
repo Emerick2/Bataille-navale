@@ -1,4 +1,4 @@
-import type { EtatCase } from '../../types'
+import type { EtatCase } from '../../pages/Register/types'
 import MiniRadarStyles from './MiniRadar.module.css'
 
 type MiniRadarProps = {

@@ -1,202 +1,360 @@
 import './GameGrid.css'
-import React from 'react';
+import "./pages/History/History.css"
+import React, {useContext, useEffect, useState} from 'react';
+import {AbandonGame, ConnexionALaPartie, EndedGame, ItIsPlayerOneTurn, ListOfAccessibleSections, request, TheCurrentPlayerIsPlayerOne, WritePartOfTheGame} from './GridFunctionality/ReadingAndWritingTheAPIGrid';
+import {PlayerContext, type Player} from './context/PlayerContext';
+import type {HistoryBloc} from './pages/History/History';
+import {useNavigate} from 'react-router';
 
-const numberOfBoat : number = 9;
+export const numberOfBoat : number = 9;
 
-let myGameGrid : number[][] = [
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,1,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,1,0,0],
-    [0,1,1,0,0,0,0,1,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,1,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [1,0,0,0,0,0,0,0,1,1]
-]
-
-let itsGameGrid : number[][] = [
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,1,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,1,0,0],
-    [0,1,1,0,0,0,0,1,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,1,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [1,0,0,0,0,0,0,0,1,1]
-]
-
-let gameGridPlay : number[][] = [
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,1,0,2,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0]
-]
-
-const height : number = 10;
-
-interface ShootAtASquareProps {
-    x : number;
-    y : number;
+export interface TheGameGrids{
+    GameGridPlayer1 : number[][]; // La grille avec les bateau J1
+    GameGridPlayer2 : number[][]; // La grille avec les bateau J2
+    PlayGameGridPlayer1 : number[][]; // La grille avec les tentatives J1
+    PlayGameGridPlayer2 : number[][]; // La grille avec les tentatives J2
 }
 
-const CleanGrid = () : number[][] => {
-    const t = [];
-    for (let i = 0; i < height; i++) {
-        t.push([0,0,0,0,0,0,0,0,0,0]);
+interface GameGridPlayProps {
+    itIsOurTurn: boolean;
+}
+
+export const height : number = 10;
+
+function getGameGrids(player: Player | null): TheGameGrids | null {
+    if (!player || !player.player || typeof player.player.id !== 'number' || typeof player.player.state !== 'string' || player.player.state.length === 0) {
+        return null;
     }
-    return t;
-}
 
-const BuildTheBoard = () : number[][] => {
-    const t = CleanGrid();
-
-    let boat : number = numberOfBoat;
+    if (typeof player.player.state !== 'string' || player.player.state.length === 0) {
+        return null;
+    }
     
-    while (boat > 0) {
-        const x = Math.floor(Math.random() * height);
-        const y = Math.floor(Math.random() * height);
-        let taille = Math.floor(Math.random() * 4);
-        if (taille > boat){
-            taille = boat;
+    try {
+        const gameGrids = JSON.parse(player.player.state) as TheGameGrids;
+        if (!Array.isArray(gameGrids.GameGridPlayer1) || !Array.isArray(gameGrids.GameGridPlayer2) ||
+            !Array.isArray(gameGrids.PlayGameGridPlayer1) || !Array.isArray(gameGrids.PlayGameGridPlayer2)) {
+            return null;
         }
-        boat--;
-        t[y][x] = 1;
-        let right : boolean = false;
-        let left : boolean = false;
-        let up : boolean = false;
-        let down : boolean = false;
-        for (let i = 0; i < taille; i++) {
-            if (i == 0){
-                if (Math.floor(Math.random() * 2) == 1){
-                    if (y+1 < height && t[y+1][x] == 0) {
-                        up=true;
-                    }
-                } else {
-                    if (x+1 < height && t[y][x+1] == 0) {
-                        right=true;
-                    }
-                }
-            }
-
-            if (right == false && left == false && up == false && down == false){
-                if (y+1 < height && t[y+1][x] == 0) {
-                    up=true;
-                } else if (y-1 < height && t[y-1][x] == 0) {
-                    down=true;
-                } else if (x+1 < height && t[y][x+1] == 0) {
-                    right=true;
-                } else if (x-1 < height && t[y][x-1] == 0) {
-                    left=true;
-                }
-            }
-
-            if (right && x+1 < height && t[y][x+1] == 0){
-                t[y][x+1] = 1;
-            } else if (left && x-1 < height && t[y][x-1] == 0){
-                t[y][x-1] = 1;
-            } else if (up && y+1 < height && t[y+1][x] == 0){
-                t[y+1][x] = 1;
-            } else if (down && y-1 < height && t[y-1][x+1] == 0){
-                t[y-1][x] = 1;
-            } else {
-                break;
-            }
-            boat--;
-        }
+        return gameGrids;
+    } catch {
+        return null;
     }
-
-    return t;
-}
-
-const ShootAtASquare = ({x, y} : ShootAtASquareProps) => {
-    console.log(x+" ; "+ y);
 }
 
 function MyGameGrid() {
-    return (
-        myGameGrid.map((column, colIndex) => (
-            <React.Fragment key={colIndex}>
-                <div className="lineCase">
-                    {column.map((line, lineIndex) => (
-                        line == 0 ? <article key={lineIndex} className="caseGameGride"></article> : <article key={lineIndex} className="caseGameGride boat"></article>
-                    ))}
-                </div>
-            </React.Fragment>
-        ))
-    );
+    const { player } = useContext(PlayerContext);
+    const theGameGrids = getGameGrids(player);
+    if (theGameGrids && player){
+        let gridBoat : number[][] = theGameGrids.GameGridPlayer1;
+        if (TheCurrentPlayerIsPlayerOne(player) == false){
+            gridBoat = theGameGrids.GameGridPlayer2;
+        }
+
+        return (
+            gridBoat.map((column) => (
+                <React.Fragment key={crypto.randomUUID()}>
+                    <div className="lineCase">
+                        {column.map((line, lineIndex) => (
+                            line == 0 ? <article key={crypto.randomUUID()} className="caseGameGride"></article> : <article key={lineIndex} className="caseGameGride boat"></article>
+                        ))}
+                    </div>
+                </React.Fragment>
+            ))
+        );
+    }
+    return <p>Chargement en cours.</p>;
 }
 
-function GameGridPlay() {
-    return (
-        gameGridPlay.map((column, colIndex) => (
-            <React.Fragment key={colIndex}>
-                <div className="lineCase">
-                    {column.map((line, lineIndex) => (
-                        <article key={lineIndex} className={gameGridPlay[colIndex][lineIndex] == 0 ? "caseGameGride caseGameGrideSelected" : "caseGameGride"}  onClick={(e) => {
-                            const x = lineIndex;
-                            const y = colIndex;
-                            if ((gameGridPlay.length > y && gameGridPlay[y].length > x && gameGridPlay[y][x] == 0) && (itsGameGrid.length > y && itsGameGrid[y].length > x)){
-                                console.log(x+" ; "+ y);
-                                const valueOrigine = itsGameGrid[y][x];
-                                if (valueOrigine == 0){
-                                    gameGridPlay[y][x] = 1; // 1 : on coule
-                                    console.log("COULÉ !");
-                                } else {
-                                    gameGridPlay[y][x] = 2; // 2 : on touche
-                                    console.log("TOUCHÉ !");
+function GameGridPlay({itIsOurTurn} : GameGridPlayProps) {
+    const { player, setPlayer } = useContext(PlayerContext);
 
+    if (player != null){
+        if (player.player == null){
+            console.log("Le joueur ne joue pas.");
+            return;
+        }
+        const theGameGrids = getGameGrids(player);
+        if (!theGameGrids){
+            return <p>Chargement en cours.</p>;
+        }
+        let gameGridPlay : number[][] = theGameGrids.PlayGameGridPlayer1; // Si on est le joueur 1.
+        let thisIsPlayerOne = true;
+        if (TheCurrentPlayerIsPlayerOne(player) == false){
+            thisIsPlayerOne = false;
+            gameGridPlay = theGameGrids.PlayGameGridPlayer2; // Si on est le joueur 2.
+        }
+
+        if (player.player == null){
+            console.log("Le joueur ne joue pas.");
+            return <p>Vous n'avez pas encore lancé une partie.</p>;
+        }
+        return (
+            gameGridPlay.map((column, colIndex) => (
+                <React.Fragment key={crypto.randomUUID()}>
+                    <div className="lineCase">
+                        {column.map((_line, lineIndex) => (
+                            <article key={crypto.randomUUID()} className={gameGridPlay[colIndex][lineIndex] == 0 ? "caseGameGride caseGameGrideSelected" : "caseGameGride"}  onClick={() => {
+                                if (player.player == null){
+                                    console.log("Le joueur ne joue pas.");
+                                    return;
+                                }
+                                if (!itIsOurTurn){
+                                    return;
+                                }
+                                const x : number = lineIndex;
+                                const y : number = colIndex;
+                                if ((gameGridPlay.length > y && gameGridPlay[y].length > x && gameGridPlay[y][x] == 0) && (theGameGrids.GameGridPlayer2.length > y && theGameGrids.GameGridPlayer2[y].length > x)){
+                                    console.log(x+" ; "+ y);
+                                    const valueOrigine = theGameGrids.GameGridPlayer2[y][x];
+                                    if (valueOrigine == 0){
+                                        gameGridPlay[y][x] = 1; // 1 : on coule
+                                        console.log("COULÉ !");
+                                    } else {
+                                        gameGridPlay[y][x] = 2; // 2 : on touche
+                                        console.log("TOUCHÉ !");
+                                    }
                                     let numberOfSunkenBoat = 0;
                                     for (let i = 0; i < gameGridPlay.length; i++) {
                                         for (let j = 0; j < gameGridPlay[i].length; j++) {
                                             if (gameGridPlay[i][j] == 2){
                                                 numberOfSunkenBoat++;
                                                 if (numberOfSunkenBoat >= numberOfBoat){
-                                                    // ↓ -------------------------↓ !! ↓------------------------- ↓
                                                     console.log("Le joueur à gagner !");
-                                                    // ↑ -------------------------↑ !! ↑------------------------- ↑
+                                                    (async () => {
+                                                        if (player.player != null) {
+                                                            const updatedGame = await EndedGame(
+                                                                player.player.id,
+                                                                thisIsPlayerOne,
+                                                                player.playerHeaders,
+                                                            )
+                                                            if (updatedGame) {
+                                                                setPlayer({
+                                                                    ...player,
+                                                                    player: updatedGame,
+                                                                });
+                                                            }
+                                                        }
+                                                    })();
+                                                    return;
                                                 }
-                                            }
-                                        }                                        
+                                            }                                        
+                                        }
+                                    }
+
+                                    if (TheCurrentPlayerIsPlayerOne(player)){
+                                        theGameGrids.PlayGameGridPlayer1 = gameGridPlay.map(row => [...row]); // Si le joueur 1 joue.
+                                    } else {
+                                        theGameGrids.PlayGameGridPlayer2 = gameGridPlay.map(row => [...row]); // Si le joueur 2 joue.
+                                    }
+                                    const serializedBoard : string = JSON.stringify(theGameGrids);
+
+                                    if (player != null) {
+                                        setPlayer({
+                                            ...player,
+                                            player: {
+                                            ...player.player,
+                                            state: serializedBoard,
+                                            },
+                                        });
+                                        const nextPlayer = player.player.players.find(
+                                            (gamePlayer) => gamePlayer.id !== player.userId,
+                                        );
+
+                                        if (!nextPlayer) {
+                                            console.error("Impossible de trouver le joueur suivant.");
+                                            return;
+                                        }
+
+                                        WritePartOfTheGame(
+                                            player.player.id,
+                                            nextPlayer.id,
+                                            player.playerHeaders,
+                                            serializedBoard
+                                        ).catch((err) => console.error("Erreur lors de la sauvegarde sur l'API :", err));
                                     }
                                 }
-                            }
-                        }}
-                    >
-                        {gameGridPlay[colIndex][lineIndex] == 1 ? <div className='colorSunk'></div> : null}
-                        {gameGridPlay[colIndex][lineIndex] == 2 ? <div className='colorHit'></div> : null}
-                    </article>
-                    ))}
-                </div>
-            </React.Fragment>
-        ))
-    );
+                            }}
+                        >
+                            {gameGridPlay[colIndex][lineIndex] == 1 ? <div className='colorSunk'></div> : null}
+                            {gameGridPlay[colIndex][lineIndex] == 2 ? <div className='colorHit'></div> : null}
+                        </article>
+                        ))}
+                    </div>
+                </React.Fragment>
+            ))
+        );
+    } else {
+        console.log("Le joueur n'est pas encore définie !")
+    }
 }
 
 
 function GameGrid() {
-    // Cela sera appeller au début de la partie.
-    gameGridPlay = CleanGrid();
-    myGameGrid = BuildTheBoard();
-    itsGameGrid = BuildTheBoard();
-    // sauvegarder les grilles.
+    const { player, setPlayer } = useContext(PlayerContext);
+    const [itIsOurTurn, setItIsOurTurn] = useState<number>(-1);
+    const [listOfGame, setListOfGame] = useState<HistoryBloc[]>([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        let isActive = true;
+
+        if (!player || !getGameGrids(player)) {
+            setItIsOurTurn(-1);
+            return () => {
+                isActive = false;
+            };
+        }
+
+        const checkTurn = async () => {
+            if (player.player == null){
+                console.log("Le joueur ne joue pas.");
+                return;
+            }
+            const isPlayerOneTurn = await ItIsPlayerOneTurn(player, player.player.id, player.playerHeaders);
+            if (isActive) {
+                setItIsOurTurn(isPlayerOneTurn ? 1 : 0);
+            }
+        };
+
+        checkTurn();
+
+        const timer = window.setInterval(checkTurn, 1500);
+
+        return () => {
+            isActive = false;
+            window.clearInterval(timer);
+        };
+    }, [player]);
+
+    useEffect(() => {
+        let isActive = true;
+        if (player == null){
+            return;
+        }
+
+        const FindGame = async () => {
+            try {
+                const newListOfGame : HistoryBloc[] = await ListOfAccessibleSections(player)
+                if (isActive){
+                    setListOfGame(newListOfGame);
+                }
+            } catch (error) {
+                if (isActive) {
+                    console.error("Erreur lors de la récupération des parties", error);
+                }
+            }
+        }
+        FindGame();
+
+        const timer : number = window.setInterval(FindGame, 5000);
+
+
+        return () => {
+            isActive = false;
+            window.clearInterval(timer);
+        };
+    }, [player]);
+
+    if (player && player.player && player.player.status === 'ended') {
+        let hasWin = false;
+        if (player.player.endData) {
+            try {
+                const endDataParsed = JSON.parse(player.player.endData);
+                const isPlayerOne = TheCurrentPlayerIsPlayerOne(player);
+                hasWin = (isPlayerOne && endDataParsed.playerOneVictory) || (!isPlayerOne && !endDataParsed.playerOneVictory);
+            } catch (e) {
+                console.error("Erreur de lecture de endData", e);
+            }
+        }
+
+        const ReturnHome = async () => {
+            try {
+                await request(`/games/${player.player!.id}/seen`, {
+                    method: 'POST',
+                    headers: { ...player.playerHeaders },
+                });
+
+                setPlayer({
+                    ...player,
+                    player: null,
+                });
+            } catch (error) {
+                console.error("Erreur lors du marquage de la partie comme vue :", error);
+            }
+
+            navigate("/");
+        };
+        return (
+            <div className="endGamePanel">
+                <h2>Partie Terminée</h2>
+                {hasWin ? (
+                    <p className='textVictory'>Victoire ! Vous avez coulé tous les navires adverses.</p>
+                ) : (
+                    <p className='textGameOver'>Défaite... Vos navires ont été submergés.</p>
+                )}
+                <br />
+                <button onClick={ReturnHome} className='textEndGameButton'>
+                    Retourner au menu d'accueil
+                </button>
+            </div>
+        );
+    }
+
+    let idGame = -1;
+    if (player != null && player.player != null) {
+        idGame = player.player.id;
+    }
 
     return (
-        <section className='theGrids'>
-            <MyGameGrid/>
-            {/* <span className='espaceVide'/> */}
-            <br/><br/><br/>
-            <GameGridPlay/>
-        </section>
+        <>
+            {!getGameGrids(player) ? 
+                <>
+                    <p>Vous n'avez pas encore lancé une partie.</p>
+                    {listOfGame.map((e) => (
+                        <article className="aHistory" key={crypto.randomUUID()}>
+                            <div className='listeOfName'>
+                                <p className='nameOne'>{e.nameOne}</p>
+                                <p className='nameTwo'>{e.nameTwo}</p>
+                            </div>
+                            <p className='status'>État : {e.status}</p>
+                            <p className='createdAt'>Début : {e.createdAt}</p>
+                            <button key={e.idGame} onClick={async () => {
+                                try {
+                                    const result = await ConnexionALaPartie(e.idGame, player, "");
+                                    setPlayer(result);
+                                } catch (error) {
+                                    console.error('Échec du chargement des données du joueur :', error);
+                                }
+                            }}>Lancer la partie {e.idGame} !</button>
+                        </article>
+                    ))}
+                </> : 
+                <>
+                    {player != null && player != undefined && idGame !== -1 && player.player != null && setPlayer != undefined ? 
+                        <button onClick={() => {
+                            AbandonGame(player, idGame, setPlayer);
+                        }} className='buttonAbandonGame'>Abandonné</button>
+                    : null }
+
+                    {itIsOurTurn == -1 ? <p>Chargement en cours...</p> :
+                        <section className='theGrids'>
+                            {itIsOurTurn == 1 ? <p>C'est à ton tours !</p> : <p>Ce n'est pas ton tours.</p>}
+                            <h2>Votre plateau</h2>
+                            <GameGridPlay itIsOurTurn={itIsOurTurn == 1}/>
+                            <br/>
+                            <p>Cliquez sur la grille pour tirer sur un bateau !</p>
+                            <p>- Si le tire renvoie un rond, vous avez coulé.</p>
+                            <p>- Si le tire renvoie un carré, vous avez touché une partie du bateau de votre ennemie.</p>
+                            
+                            <br/><br/><hr/><br/>
+                            <h2>Vos bateaux</h2>
+                            <MyGameGrid/>
+                        </section>
+                    }
+                </>
+            }
+        </>
     );
 }
 
