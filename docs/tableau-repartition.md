@@ -5,7 +5,7 @@ jamais le nom de la colonne « Rédaction ».
 
 | Fichier | Sujet traité | Rédaction | Relecture | État |
 |---|---|---|---|---|
-| `docs/architecture.md` | Vue d'ensemble : blocs, flux, légende, périmètre | Armel | Émerick | en cours |
+| `docs/architecture.md` | Vue d'ensemble : blocs, flux, légende, périmètre | Armel | Paul-Elie | en cours |
 | `docs/adr/0001-format-du-rapport.md` | Décision : format du rapport de synthèse | Émerick | Armel | à faire |
 | `docs/fiche-lecture.md` | Grille de lecture appliquée au README du dépôt-modèle | Paul-Elie  | Émerick | à faire |
 | `docs/tableau-repartition.md` | Ce tableau lui-même | Émerick | Toute l'équipe | en cours |
