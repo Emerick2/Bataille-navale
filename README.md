@@ -108,7 +108,7 @@ L'application se compose de deux blocs : une interface web écrite en React et T
 
 L'interface communique avec le serveur par des requêtes HTTP vers son API REST, sur `http://localhost:8000` : inscription, connexion, création de partie, invitation et envoi de chaque tour. Le serveur conserve les comptes et l'état des parties dans une base SQLite, ce qui permet de reprendre une partie plus tard.
 
-Schéma détaillé : `docs/architecture.md` (produit en séance 3, pas encore présent).
+Schéma détaillé : `docs/architecture.md`.
 
 ## Documentation détaillée
 > Dernière mise à jours : 08/10/2026
