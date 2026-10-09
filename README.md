@@ -24,8 +24,18 @@ Le projet a été réalisé en équipe de trois, en **React** et **TypeScript**,
 > Dernière mise à jours : 08/10/2026
 > Ici, vous allez voir comment démarrer le projet sur votre ordinateur.
 
-### 1. Le serveur backend, l'API
-Commencer par vous déplacer vers le dossier du serveur :
+### 1. Télécharger Deno
+Sur MacOS/Linux :
+```bash
+curl -fsSL https://deno.land/install.sh | sh
+```
+Sur Windows :
+```bash
+irm https://deno.land/install.ps1 | iex
+```
+
+### 2. Le serveur backend, l'API
+Depuis la racine du projet, accédez au dossier du backend, il se trouve dans le dossier `bataille/game-server`.
 
 ```bash
 cd bataille/game-server
@@ -39,8 +49,8 @@ deno task dev
 
 Le serveur écoute par défaut sur `http://localhost:8000`. Sa documentation interactive est disponible sur `http://localhost:8000/docs`.
 
-### 2. Le frontend
-Cette fois-ci, il vous faudra tout d'abord aller dans le dossier contenant le frontend, il se trouve dans le dossier `bataille`.
+### 3. Le frontend
+Depuis la racine du projet, accédez au dossier du frontend, il se trouve dans le dossier `bataille`.
 Vous pouvez y aller en faisant :
 ```bash
 cd bataille
@@ -62,7 +72,7 @@ L'application est alors accessible à l'adresse affichée dans le terminal (gén
 
 > Si vous rencontrez une erreur, partagez-la nous dans une issue pour que nous puissions la corriger, bonne partie !
 
-### 3. Le résultat attendu
+### 4. Le résultat attendu
 1 - Le frontend écoute bien le port http://127.0.0.1:5173/ :
 Pour vous en assurer, allez sur ce lien, vous devriez voir cette page :
 <img src="bataille/docs/images/accueil.png" alt="Image de l'accueil" width="70%">
