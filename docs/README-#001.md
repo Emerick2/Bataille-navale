@@ -7,7 +7,7 @@ Il s'adresse aux joueurs qui veulent s'affronter à distance : un joueur inscrit
 Le projet a été réalisé en équipe de trois, en **React** et **TypeScript**, dans le cadre du Bachelor 2 Informatique d'Ynov Campus Nantes.
 
 ## Technologies utilisées
-> Dernière mise à jours : 08/10/2026
+
 - **React** : construction de l'interface
 - **TypeScript** : JavaScript typé
 - **Vite** : serveur de développement et build
@@ -16,26 +16,15 @@ Le projet a été réalisé en équipe de trois, en **React** et **TypeScript**,
 - **Deno** et **SQLite** : serveur backend (fourni séparément)
 
 ## Prérequis
-> Dernière mise à jours : 08/10/2026
-- [Node.js](https://nodejs.org/)
+
+- [Node.js](https://nodejs.org/) et npm
 - [Deno](https://deno.com/) 2.9 ou plus, pour lancer le serveur backend
 
 ## Installation et démarrage
-> Dernière mise à jours : 08/10/2026
 > Ici, vous allez voir comment démarrer le projet sur votre ordinateur.
 
-### 1. Télécharger Deno
-Sur MacOS/Linux :
-```bash
-curl -fsSL https://deno.land/install.sh | sh
-```
-Sur Windows :
-```bash
-irm https://deno.land/install.ps1 | iex
-```
-
-### 2. Le serveur backend, l'API
-Depuis la racine du projet, accédez au dossier du backend, il se trouve dans le dossier `bataille/game-server`.
+### 1. Le serveur backend, l'API
+Commencer par vous déplacer vers le dossier du serveur :
 
 ```bash
 cd bataille/game-server
@@ -49,8 +38,8 @@ deno task dev
 
 Le serveur écoute par défaut sur `http://localhost:8000`. Sa documentation interactive est disponible sur `http://localhost:8000/docs`.
 
-### 3. Le frontend
-Depuis la racine du projet, accédez au dossier du frontend, il se trouve dans le dossier `bataille`.
+### 2. Le frontend
+Cette fois-ci, il vous faudra tout d'abord aller dans le dossier contenant le frontend, il se trouve dans le dossier `bataille`.
 Vous pouvez y aller en faisant :
 ```bash
 cd bataille
@@ -58,12 +47,12 @@ cd bataille
 
 S'il s'agit de votre premier démarrage, vous devrez tout d'abord télécharger les dépendances. Pour cela, faites :
 ```bash
-deno install
+npm install
 ```
 
 Maintenant que vous êtes dans le bon dossier avec toutes les dépendances, démarrez le projet avec :
 ```bash
-deno task dev
+npm run dev
 ```
 
 L'application est alors accessible à l'adresse affichée dans le terminal (généralement `http://localhost:5173`).
@@ -72,21 +61,12 @@ L'application est alors accessible à l'adresse affichée dans le terminal (gén
 
 > Si vous rencontrez une erreur, partagez-la nous dans une issue pour que nous puissions la corriger, bonne partie !
 
-### 4. Le résultat attendu
-1 - Le frontend écoute bien le port http://127.0.0.1:5173/ :
-Pour vous en assurer, allez sur ce lien, vous devriez voir cette page :
+### 3. Le résultat attendu
 <img src="bataille/docs/images/accueil.png" alt="Image de l'accueil" width="70%">
 
-2 - Le backend écoute bien le port  http://localhost:8000/ :
-Pour vous en assurer, allez sur ce lien, vous devriez voir ce texte :
-```json
-{
-  "error": "No route for GET /"
-}
-```
 
 ## Pages de l'application
-> Dernière mise à jours : 08/10/2026
+
 | Route | Page |
 | --- | --- |
 | `/` | Accueil |
@@ -99,28 +79,28 @@ Pour vous en assurer, allez sur ce lien, vous devriez voir ce texte :
 | `/credits` | Crédits |
 
 ## Authentification
-> Dernière mise à jours : 08/10/2026
+
 L'inscription (`POST /auth/signup`) et la connexion (`POST /auth/login`) prennent un **email** et un **mot de passe**. Le serveur renvoie un **token**, nécessaire pour appeler les autres routes de l'API. L'inscription connecte automatiquement l'utilisateur.
 
 ## Architecture
-> Dernière mise à jours : 08/10/2026
+
 L'application se compose de deux blocs : une interface web écrite en React et TypeScript (dossier `bataille/`), lancée avec Vite pendant le développement, et un serveur de jeu Deno + SQLite fourni par l'école (dossier `bataille/game-server/`).
 
 L'interface communique avec le serveur par des requêtes HTTP vers son API REST, sur `http://localhost:8000` : inscription, connexion, création de partie, invitation et envoi de chaque tour. Le serveur conserve les comptes et l'état des parties dans une base SQLite, ce qui permet de reprendre une partie plus tard.
 
-Schéma détaillé : `docs/architecture.md`.
+Schéma détaillé : `docs/architecture.md` (produit en séance 3, pas encore présent).
 
 ## Documentation détaillée
-> Dernière mise à jours : 08/10/2026
-- [Guide de démarrage](docs/readme-demarrage.md) : procédure complète pour lancer le projet.
-- [Réglages](docs/reglages.md) : taille de la grille, nombre de bateaux et leurs valeurs acceptées.
+
+- [Guide de démarrage](bataille/docs/readme-demarrage.md) : procédure complète pour lancer le projet.
+- [Réglages](bataille/docs/reglages.md) : taille de la grille, nombre de bateaux et leurs valeurs acceptées.
 
 ## Usage
 
 Vous pouvez utiliser ce jeu de bataille navale comme base pour créer votre propre jeu de bataille navale sans devoir recréer les bases du jeu. Vous pouvez également l'utiliser pour voir comment ce jeu fonctionne, si vous êtes curieux ! Ou bien, vous pouvez l'utiliser pour tout simplement jouer au jeu et passer un bon moment.
 
 ## Organisation du dépôt
-> Dernière mise à jours : 08/10/2026
+
 | Chemin | Contenu |
 | --- | --- |
 | `README.md` | Cette page : présentation, installation, architecture, contribution. |
@@ -137,12 +117,10 @@ Vous pouvez utiliser ce jeu de bataille navale comme base pour créer votre prop
 Chaque page a son propre fichier `NomDeLaPage.module.css`. Les couleurs et la police viennent des variables définies dans `index.css` (`var(--texte)`, `var(--sonar)`, etc.) pour garder un rendu cohérent.
 
 ## Contribuer
-> Dernière mise à jours : 08/10/2026
 Toute modification de ce projet passe par une Pull Request dédiée à une issue (un groupe d'issues) en particulier. Si vous voyez un problème ou un ajout à réaliser sur ce projet, il vous faudra donc faire une issue décrite en quatre étapes. Créer une branche qui sera dédiée à la résolution de cette issue puis faire une Pull Request en y assignant un autre membre du groupe. Celui-ci relira votre travail et pourra ainsi valider ou non son ajout dans le projet.
 Les commandes d'installation des dépendances du projet sont décrites ci-dessus.
 
 ## Contact
-> Dernière mise à jours : 08/10/2026
 | Prénom/Nom | E-Mail |
 | --- | --- |
 | [Emerick Pacaud](https://github.com/Emerick2) | pacaudemerick@gmail.com|
