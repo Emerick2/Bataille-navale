@@ -16,9 +16,22 @@ Le projet a été réalisé en équipe de trois, en **React** et **TypeScript**,
 - **Deno** et **SQLite** : serveur backend (fourni séparément)
 
 ## Prérequis
-> Dernière mise à jours : 08/10/2026
-- [Node.js](https://nodejs.org/)
-- [Deno](https://deno.com/) 2.9 ou plus, pour lancer le serveur backend
+
+- [Node.js](https://nodejs.org/) et npm
+- [Deno](https://deno.com/) 2.9 ou plus, pour lancer le serveur backend. Pour l'installer :
+  - Windows (PowerShell) :
+
+    ```powershell
+    irm https://deno.land/install.ps1 | iex
+    ```
+
+  - macOS / Linux :
+
+    ```bash
+    curl -fsSL https://deno.land/install.sh | sh
+    ```
+
+  - Vérification : `deno --version` doit afficher une version 2.9 ou plus.
 
 ## Installation et démarrage
 > Dernière mise à jours : 08/10/2026
@@ -48,6 +61,7 @@ deno task dev
 ```
 
 Le serveur écoute par défaut sur `http://localhost:8000`. Sa documentation interactive est disponible sur `http://localhost:8000/docs`.
+
 
 ### 3. Le frontend
 Depuis la racine du projet, accédez au dossier du frontend, il se trouve dans le dossier `bataille`.
