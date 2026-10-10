@@ -1,62 +1,23 @@
-# Architecture de releve-cli
+# Architecture de Bataille Navale
 
-> Dernière révision : À COMPLÉTER (date du jour)
-> Rédaction : À COMPLÉTER — Relecture : À COMPLÉTER
-
-## Ce que ce document décrit
-
-Une vue d'ensemble de releve-cli, l'outil en ligne de commande de l'Atelier Logiciel
-Nantais : quels éléments le composent, ce qui circule entre eux, et par quel moyen.
-Ce document ne décrit pas le code source ligne à ligne, ni le service de dépôt distant.
-
-## Hors périmètre
-
-À COMPLÉTER — citer explicitement ce qui n'est pas maintenu par l'atelier.
-
-## Vue d'ensemble
-
-Deux écritures sont acceptées. Gardez celle que vous préférez, supprimez l'autre.
-
-### Écriture 1 — schéma en caractères
-
-```
-+---------------------+        <étiquette du flux>        +-----------------+
-|  Fichier de relevés | -------------------------------> |  releve-cli     |
-|  (CSV horodaté)     |                                   |  (lecture+calcul)|
-+---------------------+                                   +-----------------+
-                                                                    |
-                                      À COMPLÉTER : moyen, sens, contenu
-                                                                    v
-                                                          +-----------------+
-                                                          |  À COMPLÉTER    |
-                                                          +-----------------+
-
-Légende : [ ] élément du projet   ->  flux sortant   ( ) élément hors périmètre
-```
-
-### Écriture 2 — bloc Mermaid
+Vue d'ensemble : les blocs du système et ce qui circule entre eux.
 
 ```mermaid
 flowchart LR
-  CSV[Fichier de relevés CSV] -- À COMPLÉTER --> CLI[releve-cli]
-  CLI -- À COMPLÉTER --> OUT[rapports/]
-  CLI -- À COMPLÉTER --> API[(Service de dépôt, hors périmètre)]
+  J[Joueur] -- clics : connexion, parties, tirs --> UI[Interface React<br>localhost:5173]
+  UI -- HTTP + JSON : inscription, connexion, parties, tours --> API[Serveur de jeu Deno<br>localhost:8000]
+  API -- JSON : jeton, état des parties, tour suivant --> UI
+  API -- SQL : comptes et état des parties --> DB[(Base SQLite<br>game.db)]
+  classDef hors fill:#EDF2F7,stroke:#7A7C7F,stroke-dasharray:3 3;
+  class API,DB hors;
 ```
 
-## Tableau des éléments
+**Légende** : bloc plein = code de l'équipe ; bloc en pointillés = fourni par l'école, hors périmètre du projet.
 
-| Élément | Rôle | Remplaçable par | Contrainte connue |
-|---|---|---|---|
-| Fichier de relevés (CSV) | À COMPLÉTER | À COMPLÉTER | Une mesure par ligne, séparateur virgule |
-| releve-cli | À COMPLÉTER | À COMPLÉTER | Lit tout le fichier en mémoire |
-| Dossier rapports/ | À COMPLÉTER | À COMPLÉTER | À COMPLÉTER |
-| Service de dépôt | À COMPLÉTER | — | Hors périmètre de l'atelier |
+## Explication
 
-## Liste de contrôle avant de proposer ce fichier
+Le joueur utilise l'interface React dans son navigateur. À chaque action (connexion, création ou invitation, tir), l'interface envoie une requête HTTP au serveur de jeu, avec un jeton d'authentification (*token*) dans l'en-tête `Authorization`. Ce jeton est obtenu à la connexion et conservé dans le `sessionStorage` du navigateur.
 
-- [ ] Chaque bloc porte un nom que l'on retrouve dans le code et dans les échanges.
-- [ ] Chaque flèche porte une étiquette : moyen, sens, contenu.
-- [ ] La légende explique les formes et les traits employés.
-- [ ] Le périmètre exclu est écrit explicitement.
-- [ ] La date de dernière révision est renseignée.
-- [ ] Aucune marque `À COMPLÉTER` ne subsiste.
+Le serveur de jeu enregistre les comptes et l'état de chaque partie dans une base SQLite (`game.db`). C'est ce qui rend le jeu asynchrone : un joueur peut fermer son navigateur et reprendre la partie plus tard, là où elle s'était arrêtée.
+
+*État valable au 6 octobre 2026, à revoir à chaque changement d'architecture.*
